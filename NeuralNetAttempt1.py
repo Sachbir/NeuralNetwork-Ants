@@ -1,8 +1,8 @@
 import pygame
 from Food import Food
 from Ant import Ant
+from WorldLayer import WorldLayer
 import math
-from Network import Network
 
 
 def main():
@@ -11,15 +11,15 @@ def main():
     screen = pygame.display.set_mode((500, 500))
     clock = pygame.time.Clock()
 
-    food = Food(screen)
-    ant = Ant(screen)
+    world_layers = [WorldLayer(screen)
+                   for i in range(1)]
 
     time_since_scored = 0
 
     score = 0
     print("Score: " + str(score))
 
-    network = Network([5, 5, 1])
+    restart_world = False
 
     done = False
     while not done:
@@ -27,39 +27,22 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 done = True
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                mouse_pos = pygame.mouse.get_pos()
-                if food.collide(mouse_pos):
-                    food.spawn()
+            # if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            #     mouse_pos = pygame.mouse.get_pos()
+            #     if food.collide(mouse_pos):
+            #         food.spawn()
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:    # Reload
-                network = Network([5, 5, 1])
-                food.spawn()
-                ant.spawn()
-                score = 0
-                print("Score: " + str(score))
-        if time_since_scored == 300:    # On death
-            print("Stuck. Resetting...")
+                restart_world = True
+        if time_since_scored == 150:    # On death
+            print("Resetting...")
+            restart_world = True
             time_since_scored = 0
-            network = Network([5, 5, 1])
-            food.spawn()
-            ant.spawn()
-            score = 0
-            print("Score: " + str(score))
-        if ant.collide((food.x, food.y)):   # On consumption of food
-            time_since_scored = 0
-            food.spawn()
-            score += 1
-            print("Score: " + str(score))
-
-        # NN output[1] = NN inputs[5]
-        # turn_amount = turn_decision(ant.direction, ant.x, ant.y, food.x, food.y)
-        nn_inputs = prepare_inputs(ant.direction, ant.x, ant.y, food.x, food.y)
-        turn_amount = network.get_output(nn_inputs)
 
         '''Rendering'''
         screen.fill((225, 225, 225))
-        food.update()
-        ant.update(food, turn_amount)
+        for layer in world_layers:
+            layer.update(restart_world)
+        restart_world = False
 
         '''Reset Functionality'''
         pygame.display.flip()
@@ -105,17 +88,6 @@ def should_turn_right(*args):
             (not facing_right and not food_is_below)):
         return True     # turn right
     return False        # turn left
-
-
-def prepare_inputs(antDirection, antX, antY, foodX, foodY):
-    nn_inputs = [
-        antDirection / (math.pi * 2),
-        antX / 500,
-        antY / 500,
-        foodX / 500,
-        foodY / 500,
-    ]
-    return nn_inputs
 
 
 main()

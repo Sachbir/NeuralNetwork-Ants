@@ -22,6 +22,4 @@ class Network:
             current_array = self.layers[i].get_outputs(current_array)
             #print(current_array)
 
-        print("output: ", current_array[0])
-
         return current_array[0]
