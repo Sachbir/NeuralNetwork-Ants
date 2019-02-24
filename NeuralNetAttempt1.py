@@ -1,6 +1,4 @@
 import pygame
-from Food import Food
-from Ant import Ant
 from WorldLayer import WorldLayer
 import math
 
@@ -12,12 +10,7 @@ def main():
     clock = pygame.time.Clock()
 
     world_layers = [WorldLayer(screen)
-                   for i in range(1)]
-
-    time_since_scored = 0
-
-    score = 0
-    print("Score: " + str(score))
+                    for i in range(10)]
 
     restart_world = False
 
@@ -32,11 +25,18 @@ def main():
             #     if food.collide(mouse_pos):
             #         food.spawn()
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:    # Reload
+
+                selective_breeding_time(world_layers)
+                print("----------")
+                print()
+
                 restart_world = True
-        if time_since_scored == 150:    # On death
-            print("Resetting...")
-            restart_world = True
-            time_since_scored = 0
+                time_since_scored = 0
+        # if time_since_scored == (3 * 60):   # On time expiry
+        #                                     # Seconds * ticks/second
+        #     print("Resetting...")
+        #     restart_world = True
+        #     time_since_scored = 0
 
         '''Rendering'''
         screen.fill((225, 225, 225))
@@ -47,8 +47,6 @@ def main():
         '''Reset Functionality'''
         pygame.display.flip()
         clock.tick(60)
-
-        time_since_scored += 1
 
 
 def turn_decision(*args):
@@ -88,6 +86,40 @@ def should_turn_right(*args):
             (not facing_right and not food_is_below)):
         return True     # turn right
     return False        # turn left
+
+
+def selective_breeding_time(world_layers):
+
+    # sorted_ants = []
+    # sorted_ants.insert(0, world_layers[0].ant)       # add first ant to list by default
+    #
+    # for i in range(1, len(world_layers)):
+    #     ant_is_sorted = False
+    #     unsorted_ant = world_layers[i].ant
+    #     for sorted_ant in sorted_ants:
+    #         if unsorted_ant.score > sorted_ant.score:
+    #             sorted_ants.insert(i - 1, unsorted_ant)
+    #             ant_is_sorted = True
+    #     if not ant_is_sorted:
+    #         sorted_ants.append(unsorted_ant)
+
+    ants = []
+    for i in range(len(world_layers)):
+        ants.insert(i, world_layers[i].ant)
+
+    sorted_ants = sorted(ants, key=get_score, reverse=True)
+
+    for ant in sorted_ants:
+        print("Ant - Score", ant.score)
+        print(ant.network.print_network())
+        print()
+
+    return
+
+
+def get_score(ant):
+
+    return ant.score
 
 
 main()

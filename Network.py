@@ -23,3 +23,9 @@ class Network:
             #print(current_array)
 
         return current_array[0]
+
+    def print_network(self):
+
+        for i in range(len(self.layers)):
+            print("layer", i, ":")
+            self.layers[i].print_layer()

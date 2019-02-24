@@ -15,22 +15,25 @@ class Ant(GameObject):
     radius = 6
     speed = 5
 
+    score = 0
+
     network_configuration = [5, 5, 1]
 
-    def __init__(self, screen, ):
+    def __init__(self, screen):
         super().__init__(screen)
         self.direction = random.randrange(628) / 100
         self.direction = 1      # Makes the math easier if this is not a multiple of Pi
 
         self.network = Network(self.__class__.network_configuration)
 
-    def update(self, food):
+    def update(self, food, should_move):
 
-        nn_inputs = self.prepare_inputs(food)
-        turn_amount = self.network.get_output(nn_inputs)
-        print(turn_amount)
-        self.turn(turn_amount)
-        self.move()
+        if should_move:
+            nn_inputs = self.prepare_inputs(food)
+            turn_amount = self.network.get_output(nn_inputs)
+            # print(turn_amount)
+            self.turn(turn_amount)
+            self.move()
         super().update()
 
     def spawn(self):
