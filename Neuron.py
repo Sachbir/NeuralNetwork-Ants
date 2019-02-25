@@ -40,8 +40,11 @@ class Neuron:
 
     def set_neuron_values(self, values, generation):
 
-        variance_range = 1 / (numpy.log(generation) + 0.1)    # So we don't get a 'divide by 0' error
+        variance_range = 1 / (numpy.log(generation) + 0.1)    # Add 0.1 sp we don't get a 'divide by 0' error
 
         for i in range(len(self.weights)):
-            self.weights[i] = values[i] * random.uniform(-variance_range, variance_range)
-        self.bias = values[-1] * random.uniform(-variance_range, variance_range)
+            self.weights[i] = values[i] + random.uniform(-variance_range, variance_range)
+        self.bias = values[-1] + random.uniform(-variance_range, variance_range)
+
+        # print(values)
+        # print(self.weights, self.bias)

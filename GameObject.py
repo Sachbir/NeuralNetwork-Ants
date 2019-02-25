@@ -24,8 +24,11 @@ class GameObject:
                                          self.__class__.radius, self.__class__.radius)  # Dimensions
 
     def spawn(self):
-        self.x = random.randrange(500)
-        self.y = random.randrange(500)
+
+        width, height = pygame.display.get_surface().get_size()
+
+        self.x = random.randrange(width)
+        self.y = random.randrange(height)
 
     def collide(self, pos):
         return self.collision_box.collidepoint(pos)

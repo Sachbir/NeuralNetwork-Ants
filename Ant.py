@@ -2,6 +2,7 @@ from GameObject import GameObject
 import math
 import random
 from Network import Network
+import pygame
 
 
 class Ant(GameObject):
@@ -14,8 +15,6 @@ class Ant(GameObject):
     radius = 6
     speed = 5
 
-    score = 0
-
     network_configuration = [5, 5, 1]
 
     def __init__(self, screen, color, network_data=None):
@@ -26,12 +25,20 @@ class Ant(GameObject):
         if network_data is not None:
             self.network.set_network_values(network_data)
 
+        self.totalScore = 0
+
     def update(self, food, should_move):
 
-        if should_move:
+        width, height = pygame.display.get_surface().get_size()
+
+        if (should_move and not
+                (self.x > width or
+                 self.x < 0 or
+                 self.y > height or
+                 self.y < 0)):
             nn_inputs = self.prepare_inputs(food)
-            turn_amount = self.network.get_output(nn_inputs)
-            # print(turn_amount)
+            turn_amount = self.network.get_output(nn_inputs)      # Neural network solution
+            # turn_amount = self.turn_decision(food)                  # Hard-coded solution
             self.turn(turn_amount)
             self.move()
         super().update()
@@ -56,3 +63,36 @@ class Ant(GameObject):
             food.y / 500,
         ]
         return nn_inputs
+
+    #<editor-fold desc="Manual solution to finding food">
+    def turn_decision(self, food):
+
+        angular_range = math.pi / 32
+
+        if self.should_turn_right(food):
+            return angular_range    # Clockwise
+        return -angular_range       # Counter-clockwise
+
+    def should_turn_right(self, food):
+
+        a = self.direction
+        b = self.x
+        c = self.y
+
+        # we already have coordinates for the current location
+        # get coordinates for a point 1 unit forwards
+        delta_x = self.x + math.cos(self.direction)  # * 100
+        delta_y = self.y + math.sin(self.direction)  # * 100
+        # solve the line equation, y = mx + b, of the direction of travel
+        m = (delta_y - self.y) / (delta_x - self.x)
+        b = delta_y - m * delta_x
+
+        # Not quite sure of explanation
+        facing_right = ((self.direction - math.pi / 2) % (2 * math.pi)) > math.pi
+        food_is_below = (food.y > (m * food.x + b))  # greater = lower
+
+        if ((facing_right and food_is_below) or
+                (not facing_right and not food_is_below)):
+            return True     # turn right
+        return False        # turn left
+    #</editor-fold>
