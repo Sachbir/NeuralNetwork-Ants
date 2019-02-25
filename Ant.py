@@ -12,30 +12,42 @@ class Ant(GameObject):
         # positive y is downwards (inverted)
         # positive rotation is counterclockwise (inverted)
 
-    radius = 6
+    modifier = 1
+
+    radius = 8
     speed = 5
 
-    network_configuration = [5, 5, 1]
+    network_configuration = [5, 5, 5, 1]
 
-    def __init__(self, screen, color, network_data=None):
+    def __init__(self, parent, screen, color, network_data=None):
+
+        self.parent = parent
+
+        self.score = 0
+        self.total_score = 0
+
         super().__init__(screen, color)
         self.direction = random.randrange(628) / 100
         self.direction = 1      # Makes the math easier if this is not a multiple of Pi
         self.network = Network(self.__class__.network_configuration)
         if network_data is not None:
-            self.network.set_network_values(network_data)
+            self.network.set_network_values(network_data, self.total_score)
 
-        self.totalScore = 0
+    def spawn(self, color):
+        self.score = 0
+        super().spawn(color)
 
     def update(self, food, should_move):
 
         width, height = pygame.display.get_surface().get_size()
 
-        if (should_move and not
-                (self.x > width or
-                 self.x < 0 or
-                 self.y > height or
-                 self.y < 0)):
+        # out_of_bounds = ((self.x > width or
+        #                   self.x < 0 or
+        #                   self.y > height or
+        #                   self.y < 0))
+        out_of_bounds = False  # False = Override 'Out of Bounds' detection
+
+        if should_move and not out_of_bounds:
             nn_inputs = self.prepare_inputs(food)
             turn_amount = self.network.get_output(nn_inputs)      # Neural network solution
             # turn_amount = self.turn_decision(food)                  # Hard-coded solution
@@ -43,16 +55,13 @@ class Ant(GameObject):
             self.move()
         super().update()
 
-    def spawn(self):
-        super().spawn()
-
     def move(self):
-        self.x += self.__class__.speed * math.cos(self.direction)
-        self.y += self.__class__.speed * math.sin(self.direction)
+        self.x += Ant.modifier * Ant.speed * math.cos(self.direction)
+        self.y += Ant.modifier * Ant.speed * math.sin(self.direction)
 
-    def turn(self, modification):
-        self.direction += modification
-        self.direction %= (math.pi * 2)
+    def turn(self, turn_amount):
+        self.direction += Ant.modifier * turn_amount    # add (or subtract) movement amount from current direction
+        self.direction %= (math.pi * 2)                 # constraint direction to 2 pi radians
 
     def prepare_inputs(self, food):
         nn_inputs = [

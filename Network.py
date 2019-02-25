@@ -34,8 +34,8 @@ class Network:
 
         return values
 
-    def set_network_values(self, values):
+    def set_network_values(self, values, score):
 
         for i in range(len(self.layers)):
-            self.layers[i].set_layer_values(values[i], self.generation)
+            self.layers[i].set_layer_values(values[i], score)
         self.generation += 1
