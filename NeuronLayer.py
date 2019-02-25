@@ -19,3 +19,16 @@ class NeuronLayer:
 
         for neuron in self.neurons:
             neuron.print_neuron_weights()
+
+    def get_layer_values(self):
+
+        values = []
+        for neuron in self.neurons:
+            values.append(neuron.get_neuron_values())
+
+        return values
+
+    def set_layer_values(self, values, generation):
+
+        for i in range(len(self.neurons)):
+            self.neurons[i].set_neuron_values(values[i], generation)

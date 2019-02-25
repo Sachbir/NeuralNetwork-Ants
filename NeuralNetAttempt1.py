@@ -10,9 +10,9 @@ def main():
     clock = pygame.time.Clock()
 
     world_layers = [WorldLayer(screen)
-                    for i in range(10)]
+                    for i in range(100)]
 
-    restart_world = False
+    start_next_cycle = False
 
     done = False
     while not done:
@@ -20,42 +20,31 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 done = True
-            # if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            #     mouse_pos = pygame.mouse.get_pos()
-            #     if food.collide(mouse_pos):
-            #         food.spawn()
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:    # Reload
 
                 selective_breeding_time(world_layers)
                 print("----------")
                 print()
+                start_next_cycle = True
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_d:
+                for layer in world_layers:
+                    print(layer.ant.network.get_network_values())
 
-                restart_world = True
-                time_since_scored = 0
-        # if time_since_scored == (3 * 60):   # On time expiry
-        #                                     # Seconds * ticks/second
-        #     print("Resetting...")
-        #     restart_world = True
-        #     time_since_scored = 0
 
-        '''Rendering'''
         screen.fill((225, 225, 225))
         for layer in world_layers:
-            layer.update(restart_world)
-        restart_world = False
+            layer.update(start_next_cycle)
+        start_next_cycle = False
 
         '''Reset Functionality'''
         pygame.display.flip()
         clock.tick(60)
 
 
+# Simple decision solution
 def turn_decision(*args):
 
     angular_range = math.pi / 32
-
-    # turn_amount -> eventually get from NN
-    # turn_amount = 2 * turn_amount - 1
-    # turn_amount *= angular_range
 
     if should_turn_right(*args):
         return angular_range    # Clockwise
@@ -90,18 +79,11 @@ def should_turn_right(*args):
 
 def selective_breeding_time(world_layers):
 
-    # sorted_ants = []
-    # sorted_ants.insert(0, world_layers[0].ant)       # add first ant to list by default
-    #
-    # for i in range(1, len(world_layers)):
-    #     ant_is_sorted = False
-    #     unsorted_ant = world_layers[i].ant
-    #     for sorted_ant in sorted_ants:
-    #         if unsorted_ant.score > sorted_ant.score:
-    #             sorted_ants.insert(i - 1, unsorted_ant)
-    #             ant_is_sorted = True
-    #     if not ant_is_sorted:
-    #         sorted_ants.append(unsorted_ant)
+    is_there_a_best = False
+
+    best_ant = world_layers[0].ant
+
+    # Step 1: Rank all ants
 
     ants = []
     for i in range(len(world_layers)):
@@ -110,11 +92,26 @@ def selective_breeding_time(world_layers):
     sorted_ants = sorted(ants, key=get_score, reverse=True)
 
     for ant in sorted_ants:
-        print("Ant - Score", ant.score)
-        print(ant.network.print_network())
-        print()
+        if ant.score > best_ant.score:
+            best_ant = ant
+            is_there_a_best = True
+        # print("Ant - Score", ant.score)
+        # print(ant.network.get_network_values())
+        # print()
 
-    return
+    # Step 2: Produce a new generation of ants based on the best predecessors
+
+    # for layer in world_layers:
+    #     layer.ant.network.generation += 1
+    #     layer.ant.network.set_network_values(best_ant.network.get_network_values())
+
+    # Bootleg strategy
+
+    if is_there_a_best:
+        for i in range(100):
+            world_layers[i].ant.network.set_network_values(
+                sorted_ants[math.ceil(math.sqrt(i))].network.get_network_values()
+            )
 
 
 def get_score(ant):
@@ -123,3 +120,9 @@ def get_score(ant):
 
 
 main()
+
+# Selective breeding
+# 1A. Generate ants
+# 2. Run cycle
+# 3. On cycle end, rank all ants
+# 1B. Generate ants based on previous "winners"

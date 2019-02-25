@@ -4,19 +4,19 @@ import random
 
 class GameObject:
 
-    color = (0, 0, 0)
     radius = 0
 
-    def __init__(self, screen):
+    def __init__(self, screen, color):
         self.screen = screen
         self.x = 0
         self.y = 0
         self.collision_box = pygame.Rect(0, 0, 0, 0)
         self.spawn()
+        self.color = color
 
     def update(self, *arg):
         pygame.draw.circle(self.screen,
-                           self.__class__.color,
+                           self.color,
                            (round(self.x), round(self.y)),
                            self.__class__.radius)
         self.collision_box = pygame.Rect(self.x - self.__class__.radius / 2,  # Top left x

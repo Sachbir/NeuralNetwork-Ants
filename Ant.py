@@ -11,7 +11,6 @@ class Ant(GameObject):
         # positive y is downwards (inverted)
         # positive rotation is counterclockwise (inverted)
 
-    color = (0, 0, 204)
     radius = 6
     speed = 5
 
@@ -19,12 +18,13 @@ class Ant(GameObject):
 
     network_configuration = [5, 5, 1]
 
-    def __init__(self, screen):
-        super().__init__(screen)
+    def __init__(self, screen, color, network_data=None):
+        super().__init__(screen, color)
         self.direction = random.randrange(628) / 100
         self.direction = 1      # Makes the math easier if this is not a multiple of Pi
-
         self.network = Network(self.__class__.network_configuration)
+        if network_data is not None:
+            self.network.set_network_values(network_data)
 
     def update(self, food, should_move):
 
@@ -37,7 +37,6 @@ class Ant(GameObject):
         super().update()
 
     def spawn(self):
-        self.network = Network(self.__class__.network_configuration)
         super().spawn()
 
     def move(self):
