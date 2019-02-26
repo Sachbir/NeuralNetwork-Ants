@@ -1,24 +1,23 @@
 import pygame
-import random
 
 
 class GameObject:
 
-    avoid_radius = 100
+    avoid_radius = 20
     should_render_object = True
 
-    distance_from_edge = 75
+    distance_from_edge = 150
     radius = 0
 
-    def __init__(self, screen, color, avoid=None):
+    def __init__(self, screen, color, coordinates, avoid=None):
         self.screen = screen
+        self.collision_box = pygame.Rect(0, 0, 0, 0)
         self.x = 0
         self.y = 0
-        self.collision_box = pygame.Rect(0, 0, 0, 0)
         if avoid is None:
-            self.spawn(color)
+            self.spawn(color, coordinates)
         else:
-            self.spawn(color, avoid)
+            self.spawn(color, coordinates, avoid)
         self.color = color
 
     def update(self, *arg):
@@ -32,24 +31,36 @@ class GameObject:
                                          self.y - self.__class__.radius / 2,  # Top left y
                                          self.__class__.radius, self.__class__.radius)  # Dimensions
 
-    def spawn(self, color, avoid=None):
+    def spawn(self, color, coordinates=None, avoid=None):
 
         self.color = color
 
+        if coordinates is not None:
+            self.x, self.y = coordinates
+            return
+
         width, height = pygame.display.get_surface().get_size()
+        self.x = (self.x + 100) % width
+        self.y = (self.x + 100) % height
 
-        self.x = random.randrange(GameObject.distance_from_edge, width - GameObject.distance_from_edge)
-        self.y = random.randrange(GameObject.distance_from_edge, height - GameObject.distance_from_edge)
+        if avoid is None:
+            return
 
-        if avoid is not None:
+        while True:
             avoid_box = pygame.Rect(avoid.x - GameObject.avoid_radius,  # Top left x
                                     avoid.y - GameObject.avoid_radius,  # Top left y
-                                    2*GameObject.avoid_radius, 2*GameObject.avoid_radius)  # Dimensions
-            while True:
-                self.x = random.randrange(GameObject.distance_from_edge, width - GameObject.distance_from_edge)
-                self.y = random.randrange(GameObject.distance_from_edge, height - GameObject.distance_from_edge)
-                if not avoid_box.collidepoint(self.x, self.y):
-                    break
+                                    2 * GameObject.avoid_radius, 2 * GameObject.avoid_radius)  # Dimensions
+            in_avoid_box = avoid_box.collidepoint(self.x, self.y)
+
+            out_of_bounds = ((self.x > width - GameObject.distance_from_edge or
+                              self.x < GameObject.distance_from_edge or
+                              self.y > height - GameObject.distance_from_edge or
+                              self.y < GameObject.distance_from_edge))
+            if not in_avoid_box and not out_of_bounds:
+                break
+
+            self.x = (self.x + 100) % width
+            self.y = (self.y + 100) % height
 
     def collide(self, pos):
         return self.collision_box.collidepoint(pos)

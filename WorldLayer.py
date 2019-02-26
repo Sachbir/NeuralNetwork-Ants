@@ -1,20 +1,23 @@
+import math
+import random
 from Ant import Ant
 from Food import Food
-import random
-import math
 
 
 class WorldLayer:
 
-    seconds_to_live = 20
+    seconds_to_live = 40
+    top_score = 0
+
+    should_print_food_coordinates = False
 
     def __init__(self, screen):
 
         self.screen = screen
 
-        self.color = (random.randrange(255), random.randrange(255), random.randrange(255))
-        self.ant = Ant(self, screen, self.color, None)
-        self.food = Food(screen, self.color, self.ant)
+        self.color = (random.randrange(225), random.randrange(225), random.randrange(225))
+        self.ant = Ant(self, screen, self.color, (150, 150))
+        self.food = Food(screen, self.color, (400, 300), self.ant)
 
         self.time_since_eaten = 0
 
@@ -26,20 +29,23 @@ class WorldLayer:
         should_move = True
 
         if start_next_cycle:
-            self.ant.spawn(self.color)
-            self.food.spawn(self.color, self.ant)
+            self.ant.spawn(self.color, (150, 150))
+            self.food.spawn(self.color, (400, 300), self.ant)
             self.time_since_eaten = 0
+            WorldLayer.top_score = 0
             return alive
 
         if self.time_since_eaten >= (WorldLayer.seconds_to_live * 60):
             should_move = False
 
         if self.ant.collide((self.food.x, self.food.y)):   # On consumption of food
-            self.food.spawn(self.color, self.ant)
-            self.ant.total_score += 1
+            self.food.spawn(self.color, None, self.ant)
             self.ant.score += 1
             self.time_since_eaten = 0
-            print("!", end='')
+            if WorldLayer.top_score < self.ant.score:
+                WorldLayer.top_score = self.ant.score
+                if WorldLayer.should_print_food_coordinates:
+                    print(" F:", self.food.x, self.food.y, end='')
         self.food.update()
         self.ant.update(self.food, should_move)
 
@@ -51,7 +57,7 @@ class WorldLayer:
 
     def set_color(self, color):
 
-        variance = math.floor(25 / (self.ant.total_score + 1))
+        variance = math.floor(25 / (self.ant.score + 1) + 1)
 
         r = color[0] + random.randrange(-variance, variance)
         g = color[1] + random.randrange(-variance, variance)
@@ -70,3 +76,7 @@ class WorldLayer:
         if x < 50:
             return 0
         return x
+
+    def restart_ant(self):
+        self.color = (random.randrange(225), random.randrange(225), random.randrange(225))
+        self.ant = Ant(self, self.screen, self.color, (200, 400))

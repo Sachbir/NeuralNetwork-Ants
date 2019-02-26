@@ -1,8 +1,7 @@
-from GameObject import GameObject
 import math
-import random
-from Network import Network
 import pygame
+from GameObject import GameObject
+from Network import Network
 
 
 class Ant(GameObject):
@@ -17,35 +16,35 @@ class Ant(GameObject):
     radius = 8
     speed = 5
 
-    network_configuration = [5, 5, 5, 1]
+    network_configuration = [5, 5, 1]
 
-    def __init__(self, parent, screen, color, network_data=None):
+    def __init__(self, parent, screen, color, coordinates, network_data=None):
 
         self.parent = parent
 
         self.score = 0
-        self.total_score = 0
 
-        super().__init__(screen, color)
-        self.direction = random.randrange(628) / 100
+        super().__init__(screen, color, coordinates)
+        # self.direction = random.randrange(628) / 100
         self.direction = 1      # Makes the math easier if this is not a multiple of Pi
         self.network = Network(self.__class__.network_configuration)
         if network_data is not None:
-            self.network.set_network_values(network_data, self.total_score)
+            self.network.set_network_values(network_data, self.score)
 
-    def spawn(self, color):
+    def spawn(self, color, coordinates=None, avoid=None):
         self.score = 0
-        super().spawn(color)
+        super().spawn(color, coordinates, avoid)
 
     def update(self, food, should_move):
 
+        super().update()
         width, height = pygame.display.get_surface().get_size()
 
-        # out_of_bounds = ((self.x > width or
-        #                   self.x < 0 or
-        #                   self.y > height or
-        #                   self.y < 0))
-        out_of_bounds = False  # False = Override 'Out of Bounds' detection
+        out_of_bounds = ((self.x > width or
+                          self.x < 0 or
+                          self.y > height or
+                          self.y < 0))
+        # out_of_bounds = False  # False = Override 'Out of Bounds' detection
 
         if should_move and not out_of_bounds:
             nn_inputs = self.prepare_inputs(food)
@@ -53,7 +52,6 @@ class Ant(GameObject):
             # turn_amount = self.turn_decision(food)                  # Hard-coded solution
             self.turn(turn_amount)
             self.move()
-        super().update()
 
     def move(self):
         self.x += Ant.modifier * Ant.speed * math.cos(self.direction)
