@@ -1,13 +1,12 @@
 import math
 import pygame
 from random import shuffle
+from Config import Config as c
 from GameObject import GameObject
 from WorldLayer import WorldLayer
 
 
 def main():
-
-    simulation_speed = 20
 
     pygame.init()
 
@@ -15,7 +14,7 @@ def main():
     clock = pygame.time.Clock()
 
     world_layers = [WorldLayer(screen)
-                    for i in range(200)]
+                    for i in range(c.num_of_ants)]
 
     start_next_cycle = False
     ants_alive = len(world_layers)
@@ -60,7 +59,7 @@ def main():
         '''Reset Functionality'''
         if GameObject.should_render_object:
             pygame.display.flip()
-        clock.tick(simulation_speed * 60)
+        clock.tick(c.sim_speed_multiplier * 60)
 
 
 def selective_breeding_time(world_layers):
@@ -80,10 +79,7 @@ def selective_breeding_time(world_layers):
     # Step 2: Produce a new generation of ants based on the best predecessors
     if sorted_ants[0].score > 0:
         for i in range(len(world_layers)):
-            world_layers[i].ant.network.set_network_values(
-                                sorted_ants[0].network.get_network_values(),
-                                sorted_ants[0].score
-                            )
+            world_layers[i].ant.network.set_network_values(sorted_ants[0].network.get_network_values())
     else:
         for i in range(len(world_layers)):
             world_layers[i].restart_ant()
@@ -97,10 +93,7 @@ def selective_breeding_time(world_layers):
         for i in range(num_good_ants, len(world_layers)):
             for j in range(math.floor(len(world_layers) / num_good_ants)):
                 if i + j < len(world_layers):
-                    world_layers[i + j].ant.network.set_network_values(
-                        sorted_ants[i].network.get_network_values(),
-                        sorted_ants[i].score
-                    )
+                    world_layers[i + j].ant.network.set_network_values(sorted_ants[i].network.get_network_values())
     else:
         for i in range(len(world_layers)):
             world_layers[i].restart_ant()

@@ -60,7 +60,7 @@ class GameObject:
                 break
 
             self.x = (self.x + 100) % width
-            self.y = (self.y + 100) % height
+            self.y = (self.y + 200) % height
 
     def collide(self, pos):
         return self.collision_box.collidepoint(pos)

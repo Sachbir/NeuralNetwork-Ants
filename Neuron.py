@@ -1,5 +1,6 @@
 import numpy
 import random
+from Config import Config as c
 
 
 class Neuron:
@@ -39,14 +40,12 @@ class Neuron:
 
         return values
 
-    def set_neuron_values(self, values, score):
+    def set_neuron_values(self, values):
 
         rounding = 15
 
-        variance_range = 0.05    # 1 / (numpy.log(score + 100.1))    # Add 0.1 so we don't get a 'divide by 0' error
-
         for i in range(len(self.weights)):
-            self.weights[i] = round(values[i], rounding) + random.uniform(-variance_range, variance_range)
-        self.bias = round(values[len(values) - 1], rounding) + random.uniform(-variance_range, variance_range)
+            self.weights[i] = round(values[i], rounding) + random.uniform(-c.variance_range, c.variance_range)
+        self.bias = round(values[len(values) - 1], rounding) + random.uniform(-c.variance_range, c.variance_range)
 
 

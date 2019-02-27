@@ -1,6 +1,7 @@
 import math
 import random
 from Ant import Ant
+from Config import Config as c
 from Food import Food
 
 
@@ -17,7 +18,7 @@ class WorldLayer:
 
         self.color = (random.randrange(225), random.randrange(225), random.randrange(225))
         self.ant = Ant(self, screen, self.color, (150, 150))
-        self.food = Food(screen, self.color, (400, 300), self.ant)
+        self.food = Food(screen, self.color, (600, 300), self.ant)
 
         self.time_since_eaten = 0
 
@@ -30,12 +31,12 @@ class WorldLayer:
 
         if start_next_cycle:
             self.ant.spawn(self.color, (150, 150))
-            self.food.spawn(self.color, (400, 300), self.ant)
+            self.food.spawn(self.color, (600, 300), self.ant)
             self.time_since_eaten = 0
             WorldLayer.top_score = 0
             return alive
 
-        if self.time_since_eaten >= (WorldLayer.seconds_to_live * 60):
+        if self.time_since_eaten >= (c.ant_TTL * 60):
             should_move = False
 
         if self.ant.collide((self.food.x, self.food.y)):   # On consumption of food
@@ -71,10 +72,10 @@ class WorldLayer:
 
     @staticmethod
     def flatten_values(x):
-        if x > 255:
-            return 255
-        if x < 50:
-            return 0
+        if x > 225:
+            return 225  # Not too bright
+        if x < 25:
+            return 25   # Not too dark
         return x
 
     def restart_ant(self):

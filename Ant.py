@@ -1,5 +1,6 @@
 import math
 import pygame
+from Config import Config as c
 from GameObject import GameObject
 from Network import Network
 
@@ -11,12 +12,10 @@ class Ant(GameObject):
         # positive y is downwards (inverted)
         # positive rotation is counterclockwise (inverted)
 
-    modifier = 1
-
     radius = 8
     speed = 5
 
-    network_configuration = [5, 5, 1]
+    network_configuration = [5, 10, 1]
 
     def __init__(self, parent, screen, color, coordinates, network_data=None):
 
@@ -27,19 +26,20 @@ class Ant(GameObject):
         super().__init__(screen, color, coordinates)
         # self.direction = random.randrange(628) / 100
         self.direction = 1      # Makes the math easier if this is not a multiple of Pi
-        self.network = Network(self.__class__.network_configuration)
+        self.network = Network(c.network_configuration)
         if network_data is not None:
-            self.network.set_network_values(network_data, self.score)
+            self.network.set_network_values(network_data)
 
     def spawn(self, color, coordinates=None, avoid=None):
+
         self.score = 0
         super().spawn(color, coordinates, avoid)
 
     def update(self, food, should_move):
 
         super().update()
-        width, height = pygame.display.get_surface().get_size()
 
+        width, height = pygame.display.get_surface().get_size()
         out_of_bounds = ((self.x > width or
                           self.x < 0 or
                           self.y > height or
@@ -54,20 +54,23 @@ class Ant(GameObject):
             self.move()
 
     def move(self):
-        self.x += Ant.modifier * Ant.speed * math.cos(self.direction)
-        self.y += Ant.modifier * Ant.speed * math.sin(self.direction)
+        self.x += c.ant_move_modifier * Ant.speed * math.cos(self.direction)
+        self.y += c.ant_move_modifier * Ant.speed * math.sin(self.direction)
 
     def turn(self, turn_amount):
-        self.direction += Ant.modifier * turn_amount    # add (or subtract) movement amount from current direction
-        self.direction %= (math.pi * 2)                 # constraint direction to 2 pi radians
+        self.direction += c.ant_move_modifier * turn_amount  # add (or subtract) movement amount from current direction
+        self.direction %= (math.pi * 2)                      # constraint direction to 2 pi radians
 
     def prepare_inputs(self, food):
+
+        width, height = pygame.display.get_surface().get_size()
+
         nn_inputs = [
             self.direction / (math.pi * 2),
-            self.x / 500,
-            self.y / 500,
-            food.x / 500,
-            food.y / 500,
+            self.x / width,
+            self.y / height,
+            food.x / width,
+            food.y / height,
         ]
         return nn_inputs
 
