@@ -20,39 +20,32 @@ class WorldLayer:
         self.ant = Ant(self, screen, self.color, (150, 150))
         self.food = Food(screen, self.color, (600, 300), self.ant)
 
-        self.time_since_eaten = 0
-
     def update(self, start_next_cycle=False):
 
         alive = 0
         dead = 1
 
-        should_move = True
+        ant_is_alive = True
 
         if start_next_cycle:
             self.ant.spawn(self.color, (150, 150))
             self.food.spawn(self.color, (600, 300), self.ant)
-            self.time_since_eaten = 0
+            self.ant.time_since_eaten = 0
             WorldLayer.top_score = 0
             return alive
-
-        if self.time_since_eaten >= (c.ant_TTL * 60):
-            should_move = False
 
         if self.ant.collide((self.food.x, self.food.y)):   # On consumption of food
             self.food.spawn(self.color, None, self.ant)
             self.ant.score += 1
-            self.time_since_eaten = 0
+            self.ant.time_since_eaten = 0
             if WorldLayer.top_score < self.ant.score:
                 WorldLayer.top_score = self.ant.score
                 if WorldLayer.should_print_food_coordinates:
                     print(" F:", self.food.x, self.food.y, end='')
         self.food.update()
-        self.ant.update(self.food, should_move)
+        ant_is_alive = self.ant.update(self.food, ant_is_alive)
 
-        self.time_since_eaten += 1
-
-        if should_move:
+        if ant_is_alive:
             return alive
         return dead
 

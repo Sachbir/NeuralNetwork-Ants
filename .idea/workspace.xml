@@ -5,14 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="481f4628-c62d-483d-864b-6544239c7a07" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Config.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Ant.py" beforeDir="false" afterPath="$PROJECT_DIR$/Ant.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Config.py" beforeDir="false" afterPath="$PROJECT_DIR$/Config.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/GameObject.py" beforeDir="false" afterPath="$PROJECT_DIR$/GameObject.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Network.py" beforeDir="false" afterPath="$PROJECT_DIR$/Network.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/NeuralNetAttempt1.py" beforeDir="false" afterPath="$PROJECT_DIR$/NeuralNetAttempt1.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Neuron.py" beforeDir="false" afterPath="$PROJECT_DIR$/Neuron.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NeuronLayer.py" beforeDir="false" afterPath="$PROJECT_DIR$/NeuronLayer.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/WorldLayer.py" beforeDir="false" afterPath="$PROJECT_DIR$/WorldLayer.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -27,16 +24,28 @@
         <entry file="file://$PROJECT_DIR$/Config.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="102">
-              <caret line="6" column="74" selection-start-line="6" selection-start-column="74" selection-end-line="6" selection-end-column="74" />
+              <caret line="6" column="29" selection-start-line="6" selection-start-column="29" selection-end-line="6" selection-end-column="29" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/NeuralNetAttempt1.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="170">
+              <caret line="46" column="85" lean-forward="true" selection-start-line="46" selection-start-column="85" selection-end-line="46" selection-end-column="85" />
+              <folding>
+                <element signature="e#0#11#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/NeuralNetAttempt1.py">
+        <entry file="file://$PROJECT_DIR$/WorldLayer.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="317">
-              <caret line="95" column="114" selection-start-line="95" selection-start-column="114" selection-end-line="95" selection-end-column="114" />
+            <state relative-caret-position="459">
+              <caret line="45" column="62" selection-start-line="45" selection-start-column="62" selection-end-line="45" selection-end-column="62" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
               </folding>
@@ -45,19 +54,10 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/WorldLayer.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-204">
-              <caret line="3" selection-start-line="3" selection-end-line="3" selection-end-column="30" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Ant.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-349">
-              <caret line="30" column="56" selection-start-line="30" selection-start-column="56" selection-end-line="30" selection-end-column="56" />
+            <state relative-caret-position="76">
+              <caret line="40" column="34" lean-forward="true" selection-start-line="40" selection-start-column="34" selection-end-line="40" selection-end-column="34" />
               <folding>
                 <element signature="e#1#12#0" expanded="true" />
                 <element signature="e#1977#2030#0" />
@@ -108,8 +108,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/GameObject.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="382">
-              <caret line="62" column="32" selection-start-line="62" selection-start-column="32" selection-end-line="62" selection-end-column="32" />
+            <state relative-caret-position="68">
+              <caret line="13" column="28" lean-forward="true" selection-start-line="13" selection-start-column="28" selection-end-line="13" selection-end-column="28" />
             </state>
           </provider>
         </entry>
@@ -147,14 +147,14 @@
         <option value="$PROJECT_DIR$/Mine.py" />
         <option value="$PROJECT_DIR$/Food.py" />
         <option value="$PROJECT_DIR$/config.py" />
-        <option value="$PROJECT_DIR$/WorldLayer.py" />
         <option value="$PROJECT_DIR$/Neuron.py" />
         <option value="$PROJECT_DIR$/NeuronLayer.py" />
         <option value="$PROJECT_DIR$/Network.py" />
-        <option value="$PROJECT_DIR$/Ant.py" />
-        <option value="$PROJECT_DIR$/GameObject.py" />
-        <option value="$PROJECT_DIR$/Config.py" />
         <option value="$PROJECT_DIR$/NeuralNetAttempt1.py" />
+        <option value="$PROJECT_DIR$/Config.py" />
+        <option value="$PROJECT_DIR$/GameObject.py" />
+        <option value="$PROJECT_DIR$/Ant.py" />
+        <option value="$PROJECT_DIR$/WorldLayer.py" />
       </list>
     </option>
   </component>
@@ -258,12 +258,12 @@
       <window_info id="Favorites" order="0" side_tool="true" />
       <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.11640531" />
       <window_info id="Structure" order="2" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Terminal" order="0" weight="0.3299363" />
+      <window_info anchor="bottom" id="Terminal" order="0" weight="0.32922733" />
       <window_info anchor="bottom" id="Event Log" order="1" side_tool="true" />
-      <window_info anchor="bottom" id="Python Console" order="2" weight="0.3299363" />
+      <window_info anchor="bottom" id="Python Console" order="2" weight="0.32922733" />
       <window_info anchor="bottom" id="Message" order="3" />
       <window_info anchor="bottom" id="Find" order="4" weight="0.32922733" />
-      <window_info anchor="bottom" id="Version Control" order="5" weight="0.3299363" />
+      <window_info anchor="bottom" id="Version Control" order="5" weight="0.32922733" />
       <window_info active="true" anchor="bottom" id="Run" order="6" visible="true" weight="0.3281075" />
       <window_info anchor="bottom" id="Debug" order="7" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="8" weight="0.25" />
@@ -273,52 +273,8 @@
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
     </layout>
-    <layout-to-restore>
-      <window_info id="Favorites" order="0" side_tool="true" />
-      <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.11700844" />
-      <window_info id="Structure" order="2" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Terminal" order="0" />
-      <window_info anchor="bottom" id="Event Log" order="1" side_tool="true" />
-      <window_info anchor="bottom" id="Python Console" order="2" />
-      <window_info anchor="bottom" id="Message" order="3" />
-      <window_info anchor="bottom" id="Find" order="4" weight="0.32922733" />
-      <window_info anchor="bottom" id="Version Control" order="5" />
-      <window_info anchor="bottom" id="Run" order="6" visible="true" weight="0.32922733" />
-      <window_info anchor="bottom" id="Debug" order="7" weight="0.4" />
-      <window_info anchor="bottom" id="Cvs" order="8" weight="0.25" />
-      <window_info anchor="bottom" id="Inspection" order="9" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="10" weight="0.32922733" />
-      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
-      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-    </layout-to-restore>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/Config.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="6" column="74" selection-start-line="6" selection-start-column="74" selection-end-line="6" selection-end-column="74" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/WorldLayer.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-204">
-          <caret line="3" selection-start-line="3" selection-end-line="3" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Ant.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-349">
-          <caret line="30" column="56" selection-start-line="30" selection-start-column="56" selection-end-line="30" selection-end-column="56" />
-          <folding>
-            <element signature="e#1#12#0" expanded="true" />
-            <element signature="e#1977#2030#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Network.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="365">
@@ -350,17 +306,45 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/GameObject.py">
+    <entry file="file://$PROJECT_DIR$/NeuralNetAttempt1.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="382">
-          <caret line="62" column="32" selection-start-line="62" selection-start-column="32" selection-end-line="62" selection-end-column="32" />
+        <state relative-caret-position="170">
+          <caret line="46" column="85" lean-forward="true" selection-start-line="46" selection-start-column="85" selection-end-line="46" selection-end-column="85" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/NeuralNetAttempt1.py">
+    <entry file="file://$PROJECT_DIR$/Config.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="317">
-          <caret line="95" column="114" selection-start-line="95" selection-start-column="114" selection-end-line="95" selection-end-column="114" />
+        <state relative-caret-position="102">
+          <caret line="6" column="29" selection-start-line="6" selection-start-column="29" selection-end-line="6" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/GameObject.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="13" column="28" lean-forward="true" selection-start-line="13" selection-start-column="28" selection-end-line="13" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Ant.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="76">
+          <caret line="40" column="34" lean-forward="true" selection-start-line="40" selection-start-column="34" selection-end-line="40" selection-end-column="34" />
+          <folding>
+            <element signature="e#1#12#0" expanded="true" />
+            <element signature="e#1977#2030#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WorldLayer.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="459">
+          <caret line="45" column="62" selection-start-line="45" selection-start-column="62" selection-end-line="45" selection-end-column="62" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>

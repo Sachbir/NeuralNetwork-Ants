@@ -22,6 +22,7 @@ class Ant(GameObject):
         self.parent = parent
 
         self.score = 0
+        self.time_since_eaten = 0
 
         super().__init__(screen, color, coordinates)
         # self.direction = random.randrange(628) / 100
@@ -35,7 +36,9 @@ class Ant(GameObject):
         self.score = 0
         super().spawn(color, coordinates, avoid)
 
-    def update(self, food, should_move):
+    def update(self, food, is_alive):
+
+        self.time_since_eaten += 1
 
         super().update()
 
@@ -46,12 +49,18 @@ class Ant(GameObject):
                           self.y < 0))
         # out_of_bounds = False  # False = Override 'Out of Bounds' detection
 
-        if should_move and not out_of_bounds:
+        lifespan_without_food = c.ant_TTL * 60
+        if (self.time_since_eaten >= lifespan_without_food) or out_of_bounds:
+            is_alive = False
+
+        if is_alive:
             nn_inputs = self.prepare_inputs(food)
             turn_amount = self.network.get_output(nn_inputs)      # Neural network solution
             # turn_amount = self.turn_decision(food)                  # Hard-coded solution
             self.turn(turn_amount)
             self.move()
+
+        return is_alive
 
     def move(self):
         self.x += c.ant_move_modifier * Ant.speed * math.cos(self.direction)

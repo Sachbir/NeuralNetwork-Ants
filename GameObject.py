@@ -8,6 +8,7 @@ class GameObject:
 
     distance_from_edge = 150
     radius = 0
+    col_box_extension = 6
 
     def __init__(self, screen, color, coordinates, avoid=None):
         self.screen = screen
@@ -27,9 +28,10 @@ class GameObject:
                                self.color,
                                (round(self.x), round(self.y)),
                                self.__class__.radius)
-        self.collision_box = pygame.Rect(self.x - self.__class__.radius / 2,  # Top left x
-                                         self.y - self.__class__.radius / 2,  # Top left y
-                                         self.__class__.radius, self.__class__.radius)  # Dimensions
+        self.collision_box = pygame.Rect(self.x - (self.__class__.radius + GameObject.col_box_extension) / 2,   # top x
+                                         self.y - (self.__class__.radius + GameObject.col_box_extension) / 2,   # top y
+                                         self.__class__.radius + GameObject.col_box_extension,  # width
+                                         self.__class__.radius + GameObject.col_box_extension)  # height
 
     def spawn(self, color, coordinates=None, avoid=None):
 
