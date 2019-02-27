@@ -16,7 +16,7 @@ class WorldLayer:
 
         self.screen = screen
 
-        self.color = (random.randrange(225), random.randrange(225), random.randrange(225))
+        self.color = (255, 200, 200)
         self.ant = Ant(self, screen, self.color, (150, 150))
         self.food = Food(screen, self.color, (600, 300), self.ant)
 
@@ -28,6 +28,7 @@ class WorldLayer:
         ant_is_alive = True
 
         if start_next_cycle:
+            self.color = (255, 200, 200)
             self.ant.spawn(self.color, (150, 150))
             self.food.spawn(self.color, (600, 300), self.ant)
             self.ant.time_since_eaten = 0
@@ -35,6 +36,7 @@ class WorldLayer:
             return alive
 
         if self.ant.collide((self.food.x, self.food.y)):   # On consumption of food
+            self.modify_color()
             self.food.spawn(self.color, None, self.ant)
             self.ant.score += 1
             self.ant.time_since_eaten = 0
@@ -51,17 +53,28 @@ class WorldLayer:
 
     def set_color(self, color):
 
-        variance = math.floor(25 / (self.ant.score + 1) + 1)
+        self.color = (255, 200 - 25 * self.ant.score, 200 - 25 * self.ant.score)
+        if self.color[1] < 0:
+            self.color = (255, 0, 0)
 
-        r = color[0] + random.randrange(-variance, variance)
-        g = color[1] + random.randrange(-variance, variance)
-        b = color[2] + random.randrange(-variance, variance)
+        # variance = math.floor(25 / (self.ant.score + 1) + 1)
+        #
+        # r = color[0] + random.randrange(-variance, variance)
+        # g = color[1] + random.randrange(-variance, variance)
+        # b = color[2] + random.randrange(-variance, variance)
+        #
+        # r = WorldLayer.flatten_values(r)
+        # g = WorldLayer.flatten_values(g)
+        # b = WorldLayer.flatten_values(b)
+        #
+        # self.color = (r, g, b)
 
-        r = WorldLayer.flatten_values(r)
-        g = WorldLayer.flatten_values(g)
-        b = WorldLayer.flatten_values(b)
+    def modify_color(self):
 
-        self.color = (r, g, b)
+        self.color = (255, 200 - 25 * self.ant.score, 200 - 25 * self.ant.score)
+        if self.color[1] < 0:
+            self.color = (255, 0, 0)
+
 
     @staticmethod
     def flatten_values(x):

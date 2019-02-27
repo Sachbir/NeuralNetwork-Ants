@@ -83,6 +83,9 @@ class Ant(GameObject):
         ]
         return nn_inputs
 
+    def distance_to(self, food):
+        return math.sqrt((self.x - food.x)**2 + (self.y - food.y)**2)
+
     #<editor-fold desc="Manual solution to finding food">
     def turn_decision(self, food):
 

@@ -67,6 +67,14 @@ def main():
         clock.tick(c.sim_speed_multiplier * 60)
 
 
+def ant_scoring(ant):
+
+    dist_ant_to_food = ant.distance_to(ant.parent.food)
+    score = ant.score * math.sqrt(2 * 900**2) + (dist_ant_to_food / 25)
+
+    return score
+
+
 def selective_breeding_time(world_layers):
 
     # Step 1: Rank all ants
@@ -78,11 +86,11 @@ def selective_breeding_time(world_layers):
 
     # Ants with good history are boosted
     # Ants who recently did well are prioritized
-    sorted_ants = sorted(ants, key=(lambda ant_2: ant_2.score), reverse=True)
+    sorted_ants = sorted(ants, key=ant_scoring, reverse=True)
     print("\tBest ant scores", sorted_ants[0].score, end='')
 
     # Step 2: Produce a new generation of ants based on the best predecessors
-    if sorted_ants[0].score > 0:
+    if ant_scoring(sorted_ants[0]) > 0:
         for i in range(len(world_layers)):
             world_layers[i].ant.network.set_network_values(sorted_ants[0].network.get_network_values())
     else:
