@@ -11,7 +11,7 @@ class Food(GameObject):
     # Stay away from the walls by 5% of height
     # 5% is arbitrary; height because it's always smaller than width
     distance_from_edge = math.floor(Config.screen_size[1] * 0.05)
-    minimum_spawn_distance_from_ant = 20
+    minimum_spawn_distance_from_ant = 100
 
     def __init__(self, screen, color, ant, coordinates=(0, 0)):
 

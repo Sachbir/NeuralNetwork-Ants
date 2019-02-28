@@ -13,11 +13,9 @@ class GameObject:
         self.color = color
         self.x, self.y = coordinates
 
-        self.is_alive = True
-
     def update(self, *args):
 
-        if Config.should_render or not self.is_alive:
+        if Config.should_render:
             pygame.draw.circle(self.screen,
                                self.color,
                                (round(self.x), round(self.y)),

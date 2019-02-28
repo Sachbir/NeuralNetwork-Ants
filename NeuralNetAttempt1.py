@@ -15,13 +15,9 @@ def main():
     ants_alive = len(world_layers)
 
     generation_counter = 0
+
     print("\n---BEGIN---\n")
-
-    should_wipe_screen = True
-
     while True:
-
-        # print("start ", end='')
 
         start_next_cycle = False
 
@@ -57,45 +53,32 @@ def main():
                 start_next_cycle = True
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_w:
                 # Wipe screen on each tick
-                should_wipe_screen = not should_wipe_screen
+                Config.should_wipe_screen = not Config.should_wipe_screen
 
         if start_next_cycle:
             print("Gen", generation_counter, end='')
-            selective_breeding_time(world_layers)
-        if start_next_cycle or should_wipe_screen:
+            evolve_ants(world_layers)
+        if start_next_cycle or Config.should_wipe_screen:
             WorldLayer.screen.fill((225, 225, 225))
-        WorldLayer.should_randomize_object_locations = True
         for layer in world_layers:
             ants_alive -= layer.update(start_next_cycle)
+        WorldLayer.should_randomize_object_locations = True
 
         '''Reset Functionality'''
         if Config.should_render:
             pygame.display.flip()
         clock.tick(Config.sim_speed_multiplier * 60)
 
-        # print("end")
 
+# Most successful ants pass their 'genome' to the next generation
+def evolve_ants(world_layers):
 
-def ant_ranking(ant):
-
-    if ant.out_of_bounds:
-        return 0
-
-    tolerance_in_distance_measure = 25
-
-    dist_ant_to_food = ant.distance_to(ant.parent.food)
-    ranking = ant.score * (2 * Config.screen_size[1]) - dist_ant_to_food / tolerance_in_distance_measure
-
-    return ranking
-
-
-def selective_breeding_time(world_layers):
-
+    # Get all ants
     ants = []
     for i in range(len(world_layers)):
         ants.insert(i, world_layers[i].ant)
 
-    # Sort ants first by food consumed, then by how close they are to the next food
+    # Sort ants by their ranking
     sorted_ants = sorted(ants, key=ant_ranking, reverse=True)
     print("\tBest ant scored", sorted_ants[0].score)
 
@@ -105,15 +88,34 @@ def selective_breeding_time(world_layers):
         if ant_ranking(ant) == ant_ranking(sorted_ants[0]):
             num_good_ants += 1
 
-    # Copy the smartest brains to the next generation (evenly)
+    # Pass on the smartest brains to the next generation of ants
+    # Each of the predecessors has (roughly) an equal number of descendents
     for i in range(num_good_ants, len(world_layers)):
         successful_ant_brain = sorted_ants[i].network
         for j in range(math.floor(len(world_layers) / num_good_ants)):
             if i + j < len(world_layers):
-                new_ant_brain = world_layers[i + j].ant.network
-                new_ant_brain.set_network_values(successful_ant_brain.get_network_values())
+                new_ant = world_layers[i + j].ant
+                new_ant.network.set_network_values(successful_ant_brain.get_network_values())
             return
 
+
+# A sorting algorithm to determine which ants are best
+# Rankings based on food eaten and distance from next food
+def ant_ranking(ant):
+
+    # if not ant.in_bounds:
+    #     return 0
+
+    food_score_bias = 2 * Config.screen_size[1]
+    food_score = food_score_bias * ant.score
+
+    dist_tolerance = 25
+    dist_ant_to_food = ant.distance_to(ant.parent.food)
+    dist_score = math.floor(dist_ant_to_food / dist_tolerance)
+
+    ranking = food_score + dist_score
+
+    return ranking
 
 
 main()

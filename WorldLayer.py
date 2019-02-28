@@ -41,8 +41,6 @@ class WorldLayer:
             self.ant.time_since_eaten = 0
             WorldLayer.best_score_in_cycle = 0
 
-            self.ant.is_alive = False
-
         if self.food.collides_with((self.ant.x, self.ant.y)):   # On consumption of food
             self.modify_color()
             self.ant.color = self.color

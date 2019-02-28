@@ -17,57 +17,52 @@ class Ant(GameObject):
 
     def __init__(self, parent, screen, color, coordinates=None, network_data=None):
 
-        # self.is_alive = True  # TODO: I need this, right?
-
         self.parent = parent
-
-        self.score = 0
-        self.time_since_eaten = 0
-
         super().__init__(screen, color, coordinates)
         self.spawn(color, coordinates)
-        # self.direction = random.randrange(628) / 100
         self.direction = 1      # Makes the math easier if this is not a multiple of Pi
         self.network = Network()
         if network_data is not None:
             self.network.set_network_values(network_data)
 
-        self.out_of_bounds = False
+        self.is_alive = True
+        self.in_bounds = True
+        self.time_since_eaten = 0
+        self.score = 0
+
+        self.spawn(color, coordinates)
 
     def spawn(self, color, coordinates=None):
 
+        self.is_alive = True
         self.score = 0
         self.time_since_eaten = 0
-        self.out_of_bounds = False
+        self.in_bounds = True
         super().spawn(color, coordinates)
 
     def update(self, food):
 
-        self.time_since_eaten += 1
+        if self.is_alive:
 
-        super().update()
-
-        width, height = Config.screen_size
-        self.out_of_bounds = ((self.x > width or
-                               self.x < 0 or
-                               self.y > height or
-                               self.y < 0))
-
-        if Config.ant_TTL is not 0:
+            self.time_since_eaten += 1
             lifespan_without_food = Config.ant_TTL * 60
-        else:
-            lifespan_without_food = 10 * 60 * 60
 
-        if (self.time_since_eaten >= lifespan_without_food) or self.out_of_bounds:
-            self.is_alive = False
-        else:
-            self.is_alive = True
+            width, height = Config.screen_size
+            self.in_bounds = (0 < self.x < width and
+                              0 < self.y < height)
 
-            nn_inputs = self.prepare_inputs(food)
-            turn_amount = self.network.get_output(nn_inputs)      # Neural network solution
-            # turn_amount = self.turn_decision(food)              # Hard-coded solution
-            self.turn(turn_amount)
-            self.move()
+            if not self.in_bounds or (self.time_since_eaten >= lifespan_without_food):
+                self.is_alive = False
+                return self.is_alive
+            else:
+                self.is_alive = True
+
+                nn_inputs = self.prepare_inputs(food)
+                turn_amount = self.network.get_output(nn_inputs)      # Neural network solution
+                # turn_amount = self.turn_decision(food)              # Hard-coded solution
+                self.turn(turn_amount)
+                self.move()
+                super().update()
         return self.is_alive
 
     def move(self):
@@ -94,6 +89,11 @@ class Ant(GameObject):
     def distance_to(self, food):
         return math.sqrt((self.x - food.x)**2 + (self.y - food.y)**2)
 
+    def set_network_values(self, values):
+
+        self.network.set_network_values(values)
+        self.spawn(self.color)
+
     #<editor-fold desc="Manual solution to finding food">
     def turn_decision(self, food):
 
@@ -104,10 +104,6 @@ class Ant(GameObject):
         return -angular_range       # Counter-clockwise
 
     def should_turn_right(self, food):
-
-        a = self.direction
-        b = self.x
-        c = self.y
 
         # we already have coordinates for the current location
         # get coordinates for a point 1 unit forwards
