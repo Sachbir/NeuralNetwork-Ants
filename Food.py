@@ -7,28 +7,26 @@ from GameObject import GameObject
 class Food(GameObject):
 
     radius = 4
-    collision_box_diameter = 15
 
     # Stay away from the walls by 5% of height
     # 5% is arbitrary; height because it's always smaller than width
     distance_from_edge = math.floor(Config.screen_size[1] * 0.05)
-    minimum_spawn_distance_from_ant = 10
+    minimum_spawn_distance_from_ant = 20
 
     def __init__(self, screen, color, ant, coordinates=(0, 0)):
 
         self.ant = ant
         super().__init__(screen, color, coordinates)
-        self.spawn(color, coordinates)
         self.collision_box = pygame.Rect(0, 0, 0, 0)
+        self.spawn(color, coordinates)
+
+    def update(self, *args):
+        super().update()
+        # pygame.draw.rect(self.screen, self.color, self.collision_box)     # for debugging
 
     def spawn(self, color, coordinates=None):
 
         super().spawn(color, coordinates)
-
-        self.collision_box = pygame.Rect(self.x - Food.collision_box_diameter / 2,  # left
-                                         self.y - Food.collision_box_diameter / 2,  # top
-                                         Food.collision_box_diameter,  # width
-                                         Food.collision_box_diameter)  # height
 
         width, height = Config.screen_size
         while True:
@@ -47,6 +45,11 @@ class Food(GameObject):
 
             self.x = (self.x + 100) % width
             self.y = (self.y + 200) % height
+
+        self.collision_box = pygame.Rect(self.x - 2 * Food.radius,  # left
+                                         self.y - 2 * Food.radius,  # top
+                                         4 * Food.radius,  # width
+                                         4 * Food.radius)  # height
 
     def collides_with(self, point):
         return self.collision_box.collidepoint(point)
