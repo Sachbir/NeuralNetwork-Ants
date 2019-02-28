@@ -15,7 +15,7 @@ class GameObject:
 
         self.is_alive = True
 
-    def update(self, *arg):
+    def update(self, *args):
 
         if Config.should_render or not self.is_alive:
             pygame.draw.circle(self.screen,
@@ -27,10 +27,10 @@ class GameObject:
 
         self.color = color
 
-        if coordinates is not None:
-            self.x, self.y = coordinates
+        if coordinates is None:
+            width, height = Config.screen_size
+            self.x = (self.x + 100) % width
+            self.y = (self.x + 100) % height
             return
 
-        width, height = Config.screen_size
-        self.x = (self.x + 100) % width
-        self.y = (self.x + 100) % height
+        self.x, self.y = coordinates

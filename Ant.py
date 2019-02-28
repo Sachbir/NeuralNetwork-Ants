@@ -15,9 +15,9 @@ class Ant(GameObject):
     radius = 8
     speed = 5
 
-    col_box_extension = 6
+    def __init__(self, parent, screen, color, coordinates=None, network_data=None):
 
-    def __init__(self, parent, screen, color, coordinates, network_data=None):
+        # self.is_alive = True  # TODO: I need this, right?
 
         self.parent = parent
 
@@ -32,12 +32,13 @@ class Ant(GameObject):
         if network_data is not None:
             self.network.set_network_values(network_data)
 
-        self.collision_box = pygame.Rect(0, 0, 0, 0)
+        self.out_of_bounds = False
 
     def spawn(self, color, coordinates=None):
 
         self.score = 0
         self.time_since_eaten = 0
+        self.out_of_bounds = False
         super().spawn(color, coordinates)
 
     def update(self, food):
@@ -47,14 +48,17 @@ class Ant(GameObject):
         super().update()
 
         width, height = Config.screen_size
-        out_of_bounds = ((self.x > width or
-                          self.x < 0 or
-                          self.y > height or
-                          self.y < 0))
-        # out_of_bounds = False  # False = Override 'Out of Bounds' detection
+        self.out_of_bounds = ((self.x > width or
+                               self.x < 0 or
+                               self.y > height or
+                               self.y < 0))
 
-        lifespan_without_food = Config.ant_TTL * 60
-        if (self.time_since_eaten >= lifespan_without_food) or out_of_bounds:
+        if Config.ant_TTL is not 0:
+            lifespan_without_food = Config.ant_TTL * 60
+        else:
+            lifespan_without_food = 10 * 60 * 60
+
+        if (self.time_since_eaten >= lifespan_without_food) or self.out_of_bounds:
             self.is_alive = False
         else:
             self.is_alive = True
@@ -71,8 +75,8 @@ class Ant(GameObject):
         self.y += Config.ant_move_modifier * Ant.speed * math.sin(self.direction)
 
     def turn(self, turn_amount):
-        self.direction += Config.ant_move_modifier * turn_amount  # add (or subtract) movement amount from current direction
-        self.direction %= (math.pi * 2)                      # constraint direction to 2 pi radians
+        self.direction += Config.ant_move_modifier * turn_amount    # add (or subtract) movement amount from current direction
+        self.direction %= (math.pi * 2)                             # constraint direction to 2 pi radians
 
     def prepare_inputs(self, food):
 
@@ -89,15 +93,6 @@ class Ant(GameObject):
 
     def distance_to(self, food):
         return math.sqrt((self.x - food.x)**2 + (self.y - food.y)**2)
-
-    def collides_with(self, pos):
-
-        self.collision_box = pygame.Rect(self.x - (self.__class__.radius + Ant.col_box_extension) / 2,  # top x
-                                         self.y - (self.__class__.radius + Ant.col_box_extension) / 2,  # top y
-                                         self.__class__.radius + Ant.col_box_extension,  # width
-                                         self.__class__.radius + Ant.col_box_extension)  # height
-
-        return self.collision_box.collidepoint(pos)
 
     #<editor-fold desc="Manual solution to finding food">
     def turn_decision(self, food):
