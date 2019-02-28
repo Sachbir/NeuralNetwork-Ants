@@ -10,19 +10,13 @@ class NeuronLayer:
 
     def get_outputs(self, inputs):
 
-        outputs = [self.neurons[i].get_output(inputs)
-                   for i in range(len(self.neurons))]           # Fill outputs with output values of each neuron
-
-        return outputs
-
-    def print_layer(self):
-
-        for neuron in self.neurons:
-            neuron.print_neuron_weights()
+        return [self.neurons[i].get_output(inputs)
+                for i in range(len(self.neurons))]      # Print an array of the output of all neurons in this layer
 
     def get_layer_values(self):
 
         values = []
+
         for neuron in self.neurons:
             values.append(neuron.get_neuron_values())
 

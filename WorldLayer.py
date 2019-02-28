@@ -1,14 +1,12 @@
-import math
 import random
 from Ant import Ant
-from Config import Config as c
 from Food import Food
 
 
 class WorldLayer:
 
     seconds_to_live = 40
-    top_score = 0
+    best_score_in_cycle = 0
 
     should_print_food_coordinates = False
 
@@ -16,73 +14,43 @@ class WorldLayer:
 
         self.screen = screen
 
-        self.color = (255, 200, 200)
+        self.color = (255, 125, 125)
         self.ant = Ant(self, screen, self.color, (150, 150))
-        self.food = Food(screen, self.color, (600, 300), self.ant)
+        self.food = Food(screen, self.color, self.ant, (600, 300))
 
     def update(self, start_next_cycle=False):
 
-        alive = 0
-        dead = 1
-
-        ant_is_alive = True
-
         if start_next_cycle:
-            self.color = (255, 200, 200)
+            self.color = (255, 125, 125)
             self.ant.spawn(self.color, (150, 150))
-            self.food.spawn(self.color, (600, 300), self.ant)
+            self.food.spawn(self.color, (600, 300))
             self.ant.time_since_eaten = 0
-            WorldLayer.top_score = 0
-            return alive
+            WorldLayer.best_score_in_cycle = 0
 
-        if self.ant.collide((self.food.x, self.food.y)):   # On consumption of food
+            self.ant.is_alive = False
+            return False
+
+        if self.ant.collides_with((self.food.x, self.food.y)):   # On consumption of food
             self.modify_color()
-            self.food.spawn(self.color, None, self.ant)
+            self.ant.color = self.color
+            self.food.spawn(self.color, None)
             self.ant.score += 1
             self.ant.time_since_eaten = 0
-            if WorldLayer.top_score < self.ant.score:
-                WorldLayer.top_score = self.ant.score
+            if WorldLayer.best_score_in_cycle < self.ant.score:
+                WorldLayer.best_score_in_cycle = self.ant.score
                 if WorldLayer.should_print_food_coordinates:
                     print(" F:", self.food.x, self.food.y, end='')
         self.food.update()
-        ant_is_alive = self.ant.update(self.food, ant_is_alive)
 
-        if ant_is_alive:
-            return alive
-        return dead
-
-    def set_color(self, color):
-
-        self.color = (255, 200 - 25 * self.ant.score, 200 - 25 * self.ant.score)
-        if self.color[1] < 0:
-            self.color = (255, 0, 0)
-
-        # variance = math.floor(25 / (self.ant.score + 1) + 1)
-        #
-        # r = color[0] + random.randrange(-variance, variance)
-        # g = color[1] + random.randrange(-variance, variance)
-        # b = color[2] + random.randrange(-variance, variance)
-        #
-        # r = WorldLayer.flatten_values(r)
-        # g = WorldLayer.flatten_values(g)
-        # b = WorldLayer.flatten_values(b)
-        #
-        # self.color = (r, g, b)
+        return not self.ant.update(self.food)
 
     def modify_color(self):
 
-        self.color = (255, 200 - 25 * self.ant.score, 200 - 25 * self.ant.score)
         if self.color[1] < 0:
-            self.color = (255, 0, 0)
+            self.color = (self.color[0], 0, 0)
+            return
 
-
-    @staticmethod
-    def flatten_values(x):
-        if x > 225:
-            return 225  # Not too bright
-        if x < 25:
-            return 25   # Not too dark
-        return x
+        self.color = (self.color[0], self.color[1] - 50, self.color[2] - 50)
 
     def restart_ant(self):
         self.color = (random.randrange(225), random.randrange(225), random.randrange(225))

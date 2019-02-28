@@ -1,14 +1,13 @@
 from NeuronLayer import NeuronLayer
+from Config import Config
 
 
 class Network:
 
-    def __init__(self, neurons_in_each_layer):
+    def __init__(self):
 
-        self.generation = 1
-
-        self.layers = [NeuronLayer(neurons_in_each_layer[i], neurons_in_each_layer[i + 1])
-                       for i in range(len(neurons_in_each_layer) - 1)]
+        self.layers = [NeuronLayer(Config.network_configuration[i], Config.network_configuration[i + 1])
+                       for i in range(len(Config.network_configuration) - 1)]
 
     def get_output(self, inputs):
 
@@ -18,12 +17,6 @@ class Network:
             current_array = self.layers[i].get_outputs(current_array)
 
         return current_array[0]
-
-    def print_network(self):
-
-        for i in range(len(self.layers)):
-            print("layer", i, ":")
-            self.layers[i].print_layer()
 
     def get_network_values(self):
 
@@ -38,4 +31,3 @@ class Network:
 
         for i in range(len(self.layers)):
             self.layers[i].set_layer_values(values[i])
-        self.generation += 1

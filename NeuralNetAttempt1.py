@@ -1,33 +1,31 @@
 import math
 import pygame
+import sys
 from random import shuffle
-from Config import Config as c
-from GameObject import GameObject
+from Config import Config
 from WorldLayer import WorldLayer
 
 
 def main():
 
     pygame.init()
-
-    screen = pygame.display.set_mode(c.screen_size)
+    screen = pygame.display.set_mode(Config.screen_size)
     clock = pygame.time.Clock()
 
     world_layers = [WorldLayer(screen)
-                    for i in range(c.num_of_ants)]
-
-    start_next_cycle = False
+                    for i in range(Config.num_of_ants)]
     ants_alive = len(world_layers)
 
     generation_counter = 0
+    print("\n---BEGIN---\n")
 
-    print("\n---BEGIN---\n\nGen 0 - ", end='')
+    should_wipe_screen = True
 
-    should_quit = False
     while True:
 
+        start_next_cycle = False
+
         if ants_alive == 0:
-            # print("all dead")
             start_next_cycle = True
             generation_counter += 1
         ants_alive = len(world_layers)
@@ -35,36 +33,38 @@ def main():
         '''Events'''
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                should_quit = True
                 print("\n\n----END----")
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:    # Initiate next cycle
+                sys.exit(0)
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                # Restart cycle
                 for layer in world_layers:
                     layer.restart_ant()
+                generation_counter = 1
                 start_next_cycle = True
-                generation_counter = 0
                 print()
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_d:
-                GameObject.should_render_object = not GameObject.should_render_object
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_f:
-                WorldLayer.should_print_food_coordinates = not WorldLayer.should_print_food_coordinates
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_d:
+                # Display toggle
+                Config.should_render = not Config.should_render
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_s:
-                start_next_cycle = True
+                # Start next cycle
                 generation_counter += 1
+                start_next_cycle = True
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_w:
+                # Wipe screen toggle
+                should_wipe_screen = not should_wipe_screen
 
-        if should_quit:
-            break
         if start_next_cycle:
+            print("Gen", generation_counter, end='')
             selective_breeding_time(world_layers)
-            print("\nGen", generation_counter, "- ", end='')
-        screen.fill((225, 225, 225))
+        if start_next_cycle or should_wipe_screen:
+            screen.fill((225, 225, 225))
         for layer in world_layers:
             ants_alive -= layer.update(start_next_cycle)
-        start_next_cycle = False
 
         '''Reset Functionality'''
-        if GameObject.should_render_object:
+        if Config.should_render:
             pygame.display.flip()
-        clock.tick(c.sim_speed_multiplier * 60)
+        clock.tick(Config.sim_speed_multiplier * 60)
 
 
 def ant_scoring(ant):
@@ -82,12 +82,12 @@ def selective_breeding_time(world_layers):
     ants = []
     for i in range(len(world_layers)):
         ants.insert(i, world_layers[i].ant)
-        shuffle(ants)   # This should mean ants of the same score are sorted differently each time
+    shuffle(ants)   # This should mean ants of the same score are sorted differently each time
 
     # Ants with good history are boosted
     # Ants who recently did well are prioritized
     sorted_ants = sorted(ants, key=ant_scoring, reverse=True)
-    print("\tBest ant scores", sorted_ants[0].score, end='')
+    print("\tBest ant scored", sorted_ants[0].score)
 
     # Step 2: Produce a new generation of ants based on the best predecessors
     if ant_scoring(sorted_ants[0]) > 0:
@@ -102,19 +102,21 @@ def selective_breeding_time(world_layers):
     for ant in sorted_ants:
         if ant.score > 0 and ant.score == sorted_ants[0].score:
             num_good_ants += 1
-    if num_good_ants > 0:
-        # print(" Copying brain...", end='')
-        for i in range(num_good_ants, len(world_layers)):
-            successful_ant_brain = sorted_ants[i].network
-            for j in range(math.floor(len(world_layers) / num_good_ants)):
-                if i + j == len(world_layers):
-                    # print("Done", end='')
-                    return
-                new_ant_brain = world_layers[i + j].ant.network
-                new_ant_brain.set_network_values(successful_ant_brain.get_network_values())
-    else:
+    if num_good_ants == 0:
         for i in range(len(world_layers)):
             world_layers[i].restart_ant()
+        return
+
+    # print(" Copying brain...", end='')
+    for i in range(num_good_ants, len(world_layers)):
+        successful_ant_brain = sorted_ants[i].network
+        for j in range(math.floor(len(world_layers) / num_good_ants)):
+            if i + j < len(world_layers):
+                new_ant_brain = world_layers[i + j].ant.network
+                new_ant_brain.set_network_values(successful_ant_brain.get_network_values())
+            # print("Done", end='')
+            return
+
 
 
 main()
