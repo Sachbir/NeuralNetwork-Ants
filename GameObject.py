@@ -1,4 +1,3 @@
-import math
 import pygame
 from Config import Config
 
@@ -21,14 +20,7 @@ class GameObject:
                                (round(self.x), round(self.y)),
                                self.__class__.radius)
 
-    def spawn(self, color, coordinates=None):
+    def spawn(self, color, coordinates):
 
         self.color = color
-
-        if coordinates is None:
-            width, height = Config.screen_size
-            self.x = (self.x + 100) % width
-            self.y = (self.x + 100) % height
-            return
-
         self.x, self.y = coordinates

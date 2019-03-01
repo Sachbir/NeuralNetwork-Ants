@@ -11,40 +11,37 @@ class WorldLayer:
     best_score_in_cycle = 0
 
     ant_location = (200, 200)
-    food_location = (400, 400)
+    food_positions = []
 
     should_print_food_coordinates = False
-    should_randomize_object_locations = False
+    should_randomize_object_locations = True
+    should_randomize_path = True
 
     screen = pygame.display.set_mode(Config.screen_size)
 
     def __init__(self):
 
-        if WorldLayer.should_randomize_object_locations:
-            print("randomizing")
-            WorldLayer.randomize_object_locations()
+        WorldLayer.randomize_ant_path()
 
         self.color = (255, 125, 125)
         self.ant = Ant(self, WorldLayer.screen, self.color, WorldLayer.ant_location)
-        self.food = Food(WorldLayer.screen, self.color, self.ant, WorldLayer.food_location)
+        self.food = Food(WorldLayer.screen, self.color, self.ant, WorldLayer.food_positions[self.ant.score])   # WorldLayer.food_location)
 
     def update(self, start_next_cycle=False):
 
         if start_next_cycle:
+            WorldLayer.randomize_ant_path()
+
             self.color = (255, 125, 125)
-
-            if WorldLayer.should_randomize_object_locations:
-                WorldLayer.randomize_object_locations()
-
             self.ant.spawn(self.color, WorldLayer.ant_location)
-            self.food.spawn(self.color, WorldLayer.food_location)
-            self.ant.time_since_eaten = 0
+            self.food.spawn(self.color, WorldLayer.food_positions[self.ant.score])
+
             WorldLayer.best_score_in_cycle = 0
 
         if self.food.collides_with((self.ant.x, self.ant.y)):   # On consumption of food
             self.modify_color()
             self.ant.color = self.color
-            self.food.spawn(self.color)
+            self.food.spawn(self.color, WorldLayer.food_positions[self.ant.score])
             self.ant.score += 1
             self.ant.time_since_eaten = 0
             if WorldLayer.best_score_in_cycle < self.ant.score:
@@ -64,16 +61,14 @@ class WorldLayer:
         self.color = (self.color[0], self.color[1] - 50, self.color[2] - 50)
 
     @staticmethod
-    def randomize_object_locations():
+    def randomize_ant_path():
 
-        width, height = Config.screen_size
-        distance_from_wall = 100
-
-        x = random.randrange(distance_from_wall, width - distance_from_wall)
-        y = random.randrange(distance_from_wall, height - distance_from_wall)
-        WorldLayer.ant_location = (x, y)
-        x = random.randrange(distance_from_wall, width - distance_from_wall)
-        y = random.randrange(distance_from_wall, height - distance_from_wall)
-        WorldLayer.food_location = (x, y)
-
-        WorldLayer.should_randomize_object_locations = False
+        if WorldLayer.should_randomize_path:
+            for i in range(10):
+                x = 100 + 700 * random.randrange(1)
+                y = 100 + 700 * random.randrange(1)
+                WorldLayer.food_positions[i] = (x, y)
+            x = 100 + 700 * random.randrange(1)
+            y = 100 + 700 * random.randrange(1)
+            WorldLayer.ant_location = (x, y)
+            WorldLayer.should_randomize_path = False

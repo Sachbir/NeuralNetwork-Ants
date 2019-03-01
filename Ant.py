@@ -32,7 +32,7 @@ class Ant(GameObject):
 
         self.spawn(color, coordinates)
 
-    def spawn(self, color, coordinates=None):
+    def spawn(self, color, coordinates):
 
         self.is_alive = True
         self.score = 0

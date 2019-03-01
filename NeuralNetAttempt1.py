@@ -109,7 +109,7 @@ def ant_ranking(ant):
     food_score_bias = 2 * Config.screen_size[1]
     food_score = food_score_bias * ant.score
 
-    dist_tolerance = 25
+    dist_tolerance = 100
     dist_ant_to_food = ant.distance_to(ant.parent.food)
     dist_score = math.floor(dist_ant_to_food / dist_tolerance)
 

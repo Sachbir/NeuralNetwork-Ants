@@ -11,7 +11,7 @@ class Food(GameObject):
     # Stay away from the walls by 5% of height
     # 5% is arbitrary; height because it's always smaller than width
     distance_from_edge = math.floor(Config.screen_size[1] * 0.05)
-    minimum_spawn_distance_from_ant = 100
+    minimum_spawn_distance_from_ant = 200
 
     def __init__(self, screen, color, ant, coordinates=(0, 0)):
 
@@ -24,7 +24,7 @@ class Food(GameObject):
         super().update()
         # pygame.draw.rect(self.screen, self.color, self.collision_box)     # for debugging
 
-    def spawn(self, color, coordinates=None):
+    def spawn(self, color, coordinates):
 
         super().spawn(color, coordinates)
 
