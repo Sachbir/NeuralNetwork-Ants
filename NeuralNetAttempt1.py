@@ -2,6 +2,7 @@ import math
 import pygame
 import sys
 from Config import Config
+from Food import Food
 from WorldLayer import WorldLayer
 
 
@@ -58,6 +59,7 @@ def main():
         if start_next_cycle:
             print("Gen", generation_counter, end='')
             evolve_ants(world_layers)
+            Food.need_next_location = True
         if start_next_cycle or Config.should_wipe_screen:
             WorldLayer.screen.fill((225, 225, 225))
         for layer in world_layers:

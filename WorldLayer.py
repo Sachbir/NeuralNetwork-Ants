@@ -1,5 +1,4 @@
 import pygame
-import random
 from Ant import Ant
 from Food import Food
 from Config import Config
@@ -7,11 +6,7 @@ from Config import Config
 
 class WorldLayer:
 
-    seconds_to_live = 40
     best_score_in_cycle = 0
-
-    ant_location = (200, 200)
-    food_positions = []
 
     should_print_food_coordinates = False
     should_randomize_object_locations = True
@@ -19,56 +14,53 @@ class WorldLayer:
 
     screen = pygame.display.set_mode(Config.screen_size)
 
+    initial_setup_complete = False
+
     def __init__(self):
 
-        WorldLayer.randomize_ant_path()
-
         self.color = (255, 125, 125)
-        self.ant = Ant(self, WorldLayer.screen, self.color, WorldLayer.ant_location)
-        self.food = Food(WorldLayer.screen, self.color, self.ant, WorldLayer.food_positions[self.ant.score])   # WorldLayer.food_location)
+        self.ant = Ant(self, self.color)
+        self.food = Food(self.color, self.ant)   # WorldLayer.food_location)
 
     def update(self, start_next_cycle=False):
 
         if start_next_cycle:
-            WorldLayer.randomize_ant_path()
+            # Reset values
+            WorldLayer.best_score_in_cycle = 0
+            Food.food_positions = []    # Reset food path for next cycle
 
             self.color = (255, 125, 125)
-            self.ant.spawn(self.color, WorldLayer.ant_location)
-            self.food.spawn(self.color, WorldLayer.food_positions[self.ant.score])
+            self.ant.spawn(self.color)
+            self.food.spawn(self.color)
 
-            WorldLayer.best_score_in_cycle = 0
+        if self.food.collides_with((self.ant.x, self.ant.y)):   # If ant eats food
 
-        if self.food.collides_with((self.ant.x, self.ant.y)):   # On consumption of food
-            self.modify_color()
-            self.ant.color = self.color
-            self.food.spawn(self.color, WorldLayer.food_positions[self.ant.score])
-            self.ant.score += 1
-            self.ant.time_since_eaten = 0
             if WorldLayer.best_score_in_cycle < self.ant.score:
                 WorldLayer.best_score_in_cycle = self.ant.score
+                Food.set_food_path()
+                Food.need_next_location = True
                 if WorldLayer.should_print_food_coordinates:
                     print(" F:", self.food.x, self.food.y)
-        self.food.update()
 
-        return not self.ant.update(self.food)   # TODO: Figure out why this is inverted
+            # Tell ant it did a good job
+            #   Must happen before ant/food spawn (Food spawn location depends on ant score
+            self.ant.score += 1
+            self.ant.time_since_eaten = 0
+
+            self.modify_color()
+            self.ant.color = self.color
+            self.food.spawn(self.color)     # Spawn new food with updated color
+
+        # Render
+        self.food.update()
+        # Returns if ant is dead
+        #   TODO: Figure out why this is inverted
+        return not self.ant.update(self.food)
 
     def modify_color(self):
 
-        if self.color[1] < 50:
+        if self.color[1] < 50:  # Colors 1 and 2 are identical; choose either
             self.color = (self.color[0], 0, 0)
             return
 
         self.color = (self.color[0], self.color[1] - 50, self.color[2] - 50)
-
-    @staticmethod
-    def randomize_ant_path():
-
-        if WorldLayer.should_randomize_path:
-            for i in range(10):
-                x = 100 + 700 * random.randrange(1)
-                y = 100 + 700 * random.randrange(1)
-                WorldLayer.food_positions[i] = (x, y)
-            x = 100 + 700 * random.randrange(1)
-            y = 100 + 700 * random.randrange(1)
-            WorldLayer.ant_location = (x, y)
-            WorldLayer.should_randomize_path = False

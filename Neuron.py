@@ -7,9 +7,9 @@ class Neuron:
 
     def __init__(self, input_count):
 
+        # Pre-fill weights with random values, including an extra for the bias
         self.weights = [random.uniform(-1, 1)
-                        for i in range(input_count + 1)]    # Pre-fill weights with random values
-                                                            # +1 for the bias value
+                        for i in range(input_count + 1)]
 
     # Given an array of inputs, return an output
     def get_output(self, inputs):
