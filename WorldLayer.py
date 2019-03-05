@@ -27,6 +27,7 @@ class WorldLayer:
         if start_next_cycle:
             # Reset values
             WorldLayer.best_score_in_cycle = 0
+            Food.need_next_location = True
             Food.food_positions = []    # Reset food path for next cycle
 
             self.color = (255, 125, 125)

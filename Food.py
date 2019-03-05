@@ -71,5 +71,3 @@ class Food(GameObject):
                 y = 100 + 700 * random.randrange(1)
             Food.food_positions.append((x, y))
             Food.need_next_location = False
-
-        print(Food.food_positions)

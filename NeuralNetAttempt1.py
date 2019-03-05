@@ -36,7 +36,6 @@ def main():
                 sys.exit(0)
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                 # Restart cycle
-                WorldLayer.should_randomize_object_locations = True
                 for layer in world_layers:
                     layer.__init__()
                 generation_counter = 1
