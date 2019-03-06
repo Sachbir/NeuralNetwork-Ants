@@ -9,16 +9,18 @@ class WorldLayer:
     best_score_in_cycle = 0
 
     should_print_food_coordinates = False
-    should_randomize_object_locations = True
     should_randomize_path = True
 
     screen = pygame.display.set_mode(Config.screen_size)
 
     initial_setup_complete = False
 
+    initial_color = (255, 125, 125)     # Pink
+    color_change_rate = 50
+
     def __init__(self):
 
-        self.color = (255, 125, 125)
+        self.color = WorldLayer.initial_color
         self.ant = Ant(self, self.color)
         self.food = Food(self.color, self.ant)   # WorldLayer.food_location)
 
@@ -27,19 +29,17 @@ class WorldLayer:
         if start_next_cycle:
             # Reset values
             WorldLayer.best_score_in_cycle = 0
-            Food.need_next_location = True
-            Food.food_positions = []    # Reset food path for next cycle
 
-            self.color = (255, 125, 125)
+            self.color = WorldLayer.initial_color
             self.ant.spawn(self.color)
             self.food.spawn(self.color)
 
-        if self.food.collides_with((self.ant.x, self.ant.y)):   # If ant eats food
+        if self.food.collides_with(self.ant.x, self.ant.y):   # If ant eats food
 
-            if WorldLayer.best_score_in_cycle < self.ant.score:
+            if self.ant.score > WorldLayer.best_score_in_cycle:
                 WorldLayer.best_score_in_cycle = self.ant.score
-                Food.set_food_path()
                 Food.need_next_location = True
+                Food.set_food_path()
                 if WorldLayer.should_print_food_coordinates:
                     print(" F:", self.food.x, self.food.y)
 
@@ -64,4 +64,6 @@ class WorldLayer:
             self.color = (self.color[0], 0, 0)
             return
 
-        self.color = (self.color[0], self.color[1] - 50, self.color[2] - 50)
+        self.color = (self.color[0],
+                      self.color[1] - WorldLayer.color_change_rate,
+                      self.color[2] - WorldLayer.color_change_rate)

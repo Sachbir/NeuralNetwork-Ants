@@ -5,6 +5,7 @@ class NeuronLayer:
 
     def __init__(self, input_count, neuron_count):
 
+        # noinspection PyUnusedLocal
         self.neurons = [Neuron(input_count)
                         for i in range(neuron_count)]   # Populates an array of neurons of specified count
 

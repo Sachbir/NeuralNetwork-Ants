@@ -8,6 +8,7 @@ class Neuron:
     def __init__(self, input_count):
 
         # Pre-fill weights with random values, including an extra for the bias
+        # noinspection PyUnusedLocal
         self.weights = [random.uniform(-1, 1)
                         for i in range(input_count + 1)]
 

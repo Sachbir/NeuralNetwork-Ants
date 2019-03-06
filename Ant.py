@@ -16,7 +16,7 @@ class Ant(GameObject):
 
     start_location = (Config.screen_size[0] / 2,
                       Config.screen_size[1] / 2)  # Middle of screen
-    lifespan_without_food = Config.ant_TTL * 60     # How many seconds before an ant starves to death
+    lifespan_without_food = Config.ant_TTL * 60     # Seconds before an ant starves to death
 
     def __init__(self, parent, color, network_data=None):
 

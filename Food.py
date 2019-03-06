@@ -11,9 +11,9 @@ class Food(GameObject):
 
     radius = 4
 
-    # Stay away from the walls by 5% of height
-    #   5% is arbitrary; height because it's typically smaller than width
-    distance_from_edge = math.floor(Config.screen_size[1] * 0.05)
+    # Stay away from the walls by some percent of height
+    #   height because it's typically smaller than width
+    distance_from_edge = math.floor(Config.screen_size[1] * 0.10)
     minimum_spawn_distance_from_ant = 200
 
     need_next_location = True
@@ -50,24 +50,37 @@ class Food(GameObject):
                                          4 * Food.radius,  # width
                                          4 * Food.radius)  # height
 
-    def collides_with(self, point):
-        return self.collision_box.collidepoint(point)
+    def collides_with(self, x, y):
+        return self.collision_box.collidepoint(x, y)
 
     @staticmethod
     def set_food_path():
 
         if Food.need_next_location:
-            x = 100 + 700 * random.randrange(1)
-            y = 100 + 700 * random.randrange(1)
+            x, y = Food._get_random_screen_corner()
+            # Run until food is in a new position
+            #   Skip this step if the list is empty
             while len(Food.food_positions) > 0:
-                # For the first food, just add it
+                # If the new position is different from the previous, move on
                 if (x, y) != Food.food_positions[-1]:
-                    # For the rest, continue if the food is different from the previous location
-                    # Spawning food at the same location may or may not be too CPU intensive
                     break
-                # Else calculate a new random location
-                # 700 is arbitrary
-                x = 100 + 700 * random.randrange(1)
-                y = 100 + 700 * random.randrange(1)
+                # Otherwise, generate a new set of coordinates and try again
+                x, y = Food._get_random_screen_corner()
             Food.food_positions.append((x, y))
-            Food.need_next_location = False
+            print("Added new food position")
+
+        Food.need_next_location = False
+
+    @staticmethod
+    def _get_random_screen_corner():
+
+        # Pick a corner on the screen, spaced from the screen borders
+        #   The X coordinate will either be the left border or the right
+        #       eg. Left side is x = 5
+        #           Adding the width, say 100, puts us x = 105, too far
+        #           Instead, add the width and subtract the spacing twice (95)
+        #   Repeat for Y
+        return (Food.distance_from_edge +
+                random.randrange(2) * (Config.screen_size[i] - 2 * Food.distance_from_edge)
+                for i in range(2)   # For width (0) and height (1)
+               )

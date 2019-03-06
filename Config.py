@@ -9,3 +9,4 @@ class Config:
     screen_size = (900, 900)
     should_render = True
     should_wipe_screen = True
+    dist_scoring_leniency = 100
