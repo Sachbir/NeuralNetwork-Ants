@@ -102,9 +102,9 @@ class Ant(GameObject):
     def distance_to(self, food):
         return math.sqrt((self.x - food.x)**2 + (self.y - food.y)**2)
 
-    def set_network_values(self, values):
+    def set_network_values(self, values, should_modify=True):
 
-        self.network.set_network_values(values)
+        self.network.set_network_values(values, should_modify)
         self.spawn(self.color)
 
     # <editor-fold desc="Manual solution to finding food">

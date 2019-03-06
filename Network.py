@@ -27,7 +27,7 @@ class Network:
 
         return values
 
-    def set_network_values(self, values):
+    def set_network_values(self, values, should_modify=True):
 
         for i in range(len(self.layers)):
-            self.layers[i].set_layer_values(values[i])
+            self.layers[i].set_layer_values(values[i], should_modify)

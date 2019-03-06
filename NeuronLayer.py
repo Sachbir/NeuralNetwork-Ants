@@ -23,7 +23,7 @@ class NeuronLayer:
 
         return values
 
-    def set_layer_values(self, values):
+    def set_layer_values(self, values, should_modify):
 
         for i in range(len(self.neurons)):
-            self.neurons[i].set_neuron_values(values[i])
+            self.neurons[i].set_neuron_values(values[i], should_modify)

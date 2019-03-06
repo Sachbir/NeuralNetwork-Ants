@@ -29,14 +29,15 @@ class Neuron:
 
         return values
 
-    def set_neuron_values(self, values):
+    def set_neuron_values(self, values, should_modify):
 
         rounding = 15   # Is this still needed?
 
         for i in range(len(self.weights)):
-            # Get a random value to deviate from inherited weights
-            random_deviation = random.uniform(-Config.variance_range, Config.variance_range)
-            # Set weight with the deviation
+            random_deviation = 0
+            if should_modify:
+                # Deviate neuron values within a given range
+                random_deviation = random.uniform(-Config.variance_range, Config.variance_range)
             self.weights[i] = round(values[i], rounding) + random_deviation
 
     @staticmethod

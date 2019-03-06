@@ -13,7 +13,7 @@ class Food(GameObject):
 
     # Stay away from the walls by some percent of height
     #   height because it's typically smaller than width
-    distance_from_edge = math.floor(Config.screen_size[1] * 0.10)
+    distance_from_edge = math.floor(Config.screen_size[1] * 0.25)
     minimum_spawn_distance_from_ant = 200
 
     need_next_location = True
@@ -83,4 +83,4 @@ class Food(GameObject):
         return (Food.distance_from_edge +
                 random.randrange(2) * (Config.screen_size[i] - 2 * Food.distance_from_edge)
                 for i in range(2)   # For width (0) and height (1)
-               )
+                )
