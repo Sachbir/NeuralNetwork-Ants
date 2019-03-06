@@ -67,7 +67,7 @@ class Food(GameObject):
                 # Otherwise, generate a new set of coordinates and try again
                 x, y = Food._get_random_screen_corner()
             Food.food_positions.append((x, y))
-            print("Added new food position")
+            # print("Added new food position")
 
         Food.need_next_location = False
 

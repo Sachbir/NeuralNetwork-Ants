@@ -36,17 +36,17 @@ class WorldLayer:
 
         if self.food.collides_with(self.ant.x, self.ant.y):   # If ant eats food
 
+            # Tell ant it did a good job
+            #   Must happen before ant/food spawn (Food spawn location depends on ant score
+            self.ant.score += 1
+            self.ant.time_since_eaten = 0
+
             if self.ant.score > WorldLayer.best_score_in_cycle:
                 WorldLayer.best_score_in_cycle = self.ant.score
                 Food.need_next_location = True
                 Food.set_food_path()
                 if WorldLayer.should_print_food_coordinates:
                     print(" F:", self.food.x, self.food.y)
-
-            # Tell ant it did a good job
-            #   Must happen before ant/food spawn (Food spawn location depends on ant score
-            self.ant.score += 1
-            self.ant.time_since_eaten = 0
 
             self.modify_color()
             self.ant.color = self.color
