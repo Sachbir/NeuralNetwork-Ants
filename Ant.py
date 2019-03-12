@@ -1,5 +1,6 @@
 import math
 from Config import Config
+from Food import Food
 from GameObject import GameObject
 from Network import Network
 
@@ -31,8 +32,11 @@ class Ant(GameObject):
         self.in_bounds = None
         self.score = None
         self.time_since_eaten = None
-        self.direction = 1      # Whole numbers (non-multiples of pi) avoids future 'divide by zero' errors
+        self.direction = None      # Whole numbers (non-multiples of pi) avoids future 'divide by zero' errors
         self.network = Network()
+
+        # Temp?
+        self.death_point = None
 
         # Create ant
         self.spawn(color, self.start_location, network_data)
@@ -45,7 +49,11 @@ class Ant(GameObject):
         self.in_bounds = True
         self.score = 0
         self.time_since_eaten = 0
+        self.direction = 1  # Whole numbers (non-multiples of pi) avoids future 'divide by zero' errors
         # No need to set direction again; carries over from previous generation, which is random enough
+
+        # Temp?
+        self.death_point = None
 
         # Define ant brain
         if network_data is not None:
@@ -75,6 +83,9 @@ class Ant(GameObject):
                 # turn_amount = self.turn_decision(food)              # Hard-coded solution
                 self.move(turn_amount)
                 super().update()
+        else:
+            if self.death_point is not None:
+                self.death_point = (self.x, self.y)
         return self.is_alive
 
     def move(self, turn_amount):
@@ -106,6 +117,23 @@ class Ant(GameObject):
 
         self.network.set_network_values(values, should_modify)
         self.spawn(self.color)
+
+    def get_total_score(self):
+
+        # Prioritize ants that have eaten a lot
+        # Next, get ants moving in correct direction
+        # Must use *vectors*, not *lines
+
+        food_eaten = self.score
+
+        x_1, y_1 = Food.food_positions[self.score]
+        x_2, y_2 = Food.food_positions[self.score + 1]
+        x_3, y_3 = self.death_point
+
+        trajectory_to_next_food = (x_2 - x_1, y_2 - y_1)
+        trajectory_current = (x_3 - x_1, y_3 - y_1)         # TODO: Normalize to length of previous vector
+
+        # TODO: How do I calculate similarities between vectors
 
     # <editor-fold desc="Manual solution to finding food">
     def turn_decision(self, food):

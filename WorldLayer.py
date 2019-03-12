@@ -1,7 +1,5 @@
-import pygame
 from Ant import Ant
 from Food import Food
-from Config import Config
 
 
 class WorldLayer:
@@ -10,8 +8,6 @@ class WorldLayer:
 
     should_print_food_coordinates = False
     should_randomize_path = True
-
-    screen = pygame.display.set_mode(Config.screen_size)
 
     initial_setup_complete = False
 
