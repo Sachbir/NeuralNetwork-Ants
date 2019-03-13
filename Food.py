@@ -48,7 +48,7 @@ class Food(GameObject):
         self.collision_box = pygame.Rect(self.x - 2 * Food.radius,  # left
                                          self.y - 2 * Food.radius,  # top
                                          4 * Food.radius,  # width
-                                         4 * Food.radius)  # height
+                                         4 * Food.radius,)  # height
 
     def collides_with(self, x, y):
         return self.collision_box.collidepoint(x, y)

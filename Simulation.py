@@ -151,20 +151,24 @@ class Simulation:
 
         # Sort ants by their ranking
         sorted_ants = sorted(ants, key=(lambda this_ant: this_ant.get_score()), reverse=True)
-        print("\tBest ant scored", sorted_ants[0].food_eaten)
+        # print("\tBest ant scored", sorted_ants[0].food_eaten)
 
-        # Top 10 ants are duplicated as is
+        # Top 10% ants are duplicated as is
 
-        for i in range(10):
+        ten_percent = math.floor(Config.num_of_ants * .1)
+
+        for i in range(ten_percent):
             smart_ant_brain = sorted_ants[i].network.get_network_values()
             self.world_layers[i].ant.set_network_values(smart_ant_brain, False)
             print(i, " ", round(sorted_ants[i].get_score(), 3))
 
         # Top 9 ants get 10 offspring
 
-        for i in range(9):
+        for i in range(ten_percent - 1):  # Don't copy the last ant, otherwise you hit 110% (Due to cloning)
             smart_ant_brain = sorted_ants[i].network.get_network_values()
-            for j in range(10):
+            for j in range(ten_percent):
+                if 10 * (i + 1) + j == Config.num_of_ants:
+                    break
                 ant_num = 10 * (i + 1) + j
                 self.world_layers[ant_num].ant.set_network_values(smart_ant_brain, True)
 

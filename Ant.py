@@ -1,4 +1,5 @@
 import math
+import sys
 from Config import Config
 from Food import Food
 from GameObject import GameObject
@@ -168,9 +169,18 @@ class Ant(GameObject):
         u_mag = math.sqrt(u[0] ** 2 + u[1] ** 2)
         v_mag = math.sqrt(v[0] ** 2 + v[1] ** 2)
 
-        angle = math.acos(u_dot_v / (u_mag * v_mag))
+        # try:
+        angle = math.acos(u_dot_v / round(u_mag * v_mag, 15))
+        # except :
+        #     print(u_dot_v)
+        #     print(u_mag)
+        #     print(v_mag)
+        #     sys.exit(-1)
 
         return angle
+
+    # @staticmethod
+    # def angle_between_points(a, b, c):
 
     # <editor-fold desc="Manual solution to finding food">
     def turn_decision(self, food):
