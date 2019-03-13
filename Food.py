@@ -43,7 +43,7 @@ class Food(GameObject):
 
         # Spawn food
         #   The 'where' depends on how much food the ant has already eaten
-        super().spawn(color, Food.food_positions[self.ant.score], other)
+        super().spawn(color, Food.food_positions[self.ant.food_eaten], other)
 
         self.collision_box = pygame.Rect(self.x - 2 * Food.radius,  # left
                                          self.y - 2 * Food.radius,  # top

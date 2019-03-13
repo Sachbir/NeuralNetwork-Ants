@@ -62,7 +62,7 @@ class Simulation:
 
             if start_next_cycle:
                 print("Gen", self.generation_counter, end='')
-                self.evolve_ants()
+                self.evolve_ants_2()
                 Food.need_next_location = True
                 Food.food_positions = []
             if start_next_cycle or Config.should_wipe_screen:
@@ -85,7 +85,7 @@ class Simulation:
 
         # Sort ants by their ranking
         sorted_ants = sorted(ants, key=Simulation.ant_ranking, reverse=True)
-        print("\tBest ant scored", sorted_ants[0].score)
+        print("\tBest ant scored", sorted_ants[0].food_eaten)
 
         # Find the smartest ants
         num_good_ants = 0
@@ -93,16 +93,16 @@ class Simulation:
             if Simulation.ant_ranking(ant) == Simulation.ant_ranking(sorted_ants[0]):
                 num_good_ants += 1
 
-        if sorted_ants[0].score == 0:
+        if sorted_ants[0].food_eaten == 0:
             Simulation.write_to_file("Lasted " + str(self.generation_counter) + " gen\tBest score:"
-                                     + str(sorted_ants[0].score) + "\n")
+                                     + str(sorted_ants[0].food_eaten) + "\n")
             self.generation_counter = 0
             print("Everyone failed. Let's try again")
             for layer in self.world_layers:
                 layer.__init__()
             return
 
-        # TODO: True copying portion doesn't seem to work
+        # TODO: True copying portion doesn't seem to work? Hard to say
         for i in range(num_good_ants):
             new_ant_brain = self.world_layers[i].ant.network
             smart_ant_brain = sorted_ants[i].network
@@ -131,7 +131,7 @@ class Simulation:
         #     return 0
 
         food_score_bias = 2 * Config.screen_size[1]
-        food_score = food_score_bias * ant.score
+        food_score = food_score_bias * ant.food_eaten
 
         # dist_ant_to_food = ant.distance_to(ant.parent.food)
         # dist_score = math.floor(dist_ant_to_food / Config.dist_scoring_leniency)
@@ -139,6 +139,34 @@ class Simulation:
         ranking = food_score    # + dist_score
 
         return ranking
+
+        # Most successful ants pass their 'genome' to the next generation
+
+    def evolve_ants_2(self):
+
+        # Get all ants
+        ants = []
+        for i in range(len(self.world_layers)):
+            ants.insert(i, self.world_layers[i].ant)
+
+        # Sort ants by their ranking
+        sorted_ants = sorted(ants, key=(lambda this_ant: this_ant.get_score()), reverse=True)
+        print("\tBest ant scored", sorted_ants[0].food_eaten)
+
+        # Top 10 ants are duplicated as is
+
+        for i in range(10):
+            smart_ant_brain = sorted_ants[i].network.get_network_values()
+            self.world_layers[i].ant.set_network_values(smart_ant_brain, False)
+            print(i, " ", round(sorted_ants[i].get_score(), 3))
+
+        # Top 9 ants get 10 offspring
+
+        for i in range(9):
+            smart_ant_brain = sorted_ants[i].network.get_network_values()
+            for j in range(10):
+                ant_num = 10 * (i + 1) + j
+                self.world_layers[ant_num].ant.set_network_values(smart_ant_brain, True)
 
     @staticmethod
     def write_to_file(message, mode="a"):

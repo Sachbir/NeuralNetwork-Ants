@@ -34,11 +34,11 @@ class WorldLayer:
 
             # Tell ant it did a good job
             #   Must happen before ant/food spawn (Food spawn location depends on ant score
-            self.ant.score += 1
+            self.ant.food_eaten += 1
             self.ant.time_since_eaten = 0
 
-            if self.ant.score > WorldLayer.best_score_in_cycle:
-                WorldLayer.best_score_in_cycle = self.ant.score
+            if self.ant.food_eaten > WorldLayer.best_score_in_cycle:
+                WorldLayer.best_score_in_cycle = self.ant.food_eaten
                 Food.need_next_location = True
                 Food.set_food_path()
                 if WorldLayer.should_print_food_coordinates:

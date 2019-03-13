@@ -30,13 +30,10 @@ class Ant(GameObject):
         # Creating empty ant attributes
         self.is_alive = None
         self.in_bounds = None
-        self.score = None
+        self.food_eaten = None
         self.time_since_eaten = None
         self.direction = None      # Whole numbers (non-multiples of pi) avoids future 'divide by zero' errors
         self.network = Network()
-
-        # Temp?
-        self.death_point = None
 
         # Create ant
         self.spawn(color, self.start_location, network_data)
@@ -47,7 +44,7 @@ class Ant(GameObject):
         # Set initial values
         self.is_alive = True
         self.in_bounds = True
-        self.score = 0
+        self.food_eaten = 0
         self.time_since_eaten = 0
         self.direction = 1  # Whole numbers (non-multiples of pi) avoids future 'divide by zero' errors
         # No need to set direction again; carries over from previous generation, which is random enough
@@ -83,9 +80,6 @@ class Ant(GameObject):
                 # turn_amount = self.turn_decision(food)              # Hard-coded solution
                 self.move(turn_amount)
                 super().update()
-        else:
-            if self.death_point is not None:
-                self.death_point = (self.x, self.y)
         return self.is_alive
 
     def move(self, turn_amount):
@@ -118,22 +112,65 @@ class Ant(GameObject):
         self.network.set_network_values(values, should_modify)
         self.spawn(self.color)
 
-    def get_total_score(self):
+    def get_score(self):
 
-        # Prioritize ants that have eaten a lot
-        # Next, get ants moving in correct direction
-        # Must use *vectors*, not *lines
+        # calculate score based on food eaten and current vector
+        # ants that have eaten food do well
+        # ants moving away from food do poorly
 
-        food_eaten = self.score
+        # Step 1: Get location of previous food, next food, and ant's death location
+        #   If ant eats nothing, the 'previous food' location can be treated as the spawn-point
 
-        x_1, y_1 = Food.food_positions[self.score]
-        x_2, y_2 = Food.food_positions[self.score + 1]
-        x_3, y_3 = self.death_point
+        if self.food_eaten == 0:
+            x_1, y_1 = 0, 0
+        else:
+            x_1, y_1 = Food.food_positions[self.food_eaten - 1]
+        x_2, y_2 = Food.food_positions[self.food_eaten]
+        x_3, y_3 = self.x, self.y
 
-        trajectory_to_next_food = (x_2 - x_1, y_2 - y_1)
-        trajectory_current = (x_3 - x_1, y_3 - y_1)         # TODO: Normalize to length of previous vector
+        # Step 2: Get the current vector of the ant, and the vector it /should/ be following
+        #   Normalizing for good measure, but this doesn't seem to be necessary
 
-        # TODO: How do I calculate similarities between vectors
+        vector_intended = (x_2 - x_1, y_2 - y_1)
+        vector_current = (x_3 - x_1, y_3 - y_1)
+
+        vector_intended = Ant.normalize(vector_intended)
+        vector_current = Ant.normalize(vector_current)
+
+        # Step 3: Find the angle between these vectors (again, normalized)
+
+        angle_between_vectors = Ant.angle_between_vectors(vector_intended, vector_current)
+        angle_between_vectors /= math.pi
+
+        # Step 4: Calculate score
+        #   Eating food increases it by 1
+        #   Moving in any direction that's not exactly perfect reduces the score, up to a maximum of 1
+
+        score = self.food_eaten - angle_between_vectors
+        return score
+
+    @staticmethod
+    def normalize(vector):
+
+        n_factor = math.sqrt(vector[0]**2 + vector[1]**2)
+        vector = (vector[0] / n_factor, vector[1] / n_factor)
+
+        return vector
+
+    # Given 2 vectors, yields the angle between them (in radians)
+    @staticmethod
+    def angle_between_vectors(u, v):
+
+        # angle = arccos((u dot v) / u_mag * v_mag)
+
+        u_dot_v = u[0] * v[0] + u[1] * v[1]
+
+        u_mag = math.sqrt(u[0] ** 2 + u[1] ** 2)
+        v_mag = math.sqrt(v[0] ** 2 + v[1] ** 2)
+
+        angle = math.acos(u_dot_v / (u_mag * v_mag))
+
+        return angle
 
     # <editor-fold desc="Manual solution to finding food">
     def turn_decision(self, food):
