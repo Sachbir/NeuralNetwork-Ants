@@ -157,6 +157,7 @@ class Simulation:
 
         ten_percent = math.floor(Config.num_of_ants * .1)
 
+        print()
         for i in range(ten_percent):
             smart_ant_brain = sorted_ants[i].network.get_network_values()
             self.world_layers[i].ant.set_network_values(smart_ant_brain, False)

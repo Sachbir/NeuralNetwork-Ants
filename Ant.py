@@ -105,8 +105,21 @@ class Ant(GameObject):
         ]
         return nn_inputs
 
-    def distance_to(self, food):
-        return math.sqrt((self.x - food.x)**2 + (self.y - food.y)**2)
+    def distance_to_food_normalized(self):
+
+        pos_initial = None
+        pos_target = None
+
+        if self.food_eaten == 0:
+            pos_initial = Ant.start_location
+        else:
+            pos_initial = Food.food_positions[self.food_eaten - 1]
+        pos_target = Food.food_positions[self.food_eaten]
+
+        dist_total = math.sqrt((pos_target[0] - pos_initial[0])**2 + (pos_target[1] - pos_initial[1])**2)
+        dist_from_ant = math.sqrt((pos_target[0] - self.x)**2 + (pos_target[1] - self.y)**2)
+
+        return dist_from_ant / dist_total
 
     def set_network_values(self, values, should_modify=True):
 
@@ -118,37 +131,62 @@ class Ant(GameObject):
         # calculate score based on food eaten and current vector
         # ants that have eaten food do well
         # ants moving away from food do poorly
+        # ants that move slowly do poorly as well
 
         # Step 1: Get location of previous food, next food, and ant's death location
         #   If ant eats nothing, the 'previous food' location can be treated as the spawn-point
 
         if self.food_eaten == 0:
-            x_1, y_1 = 0, 0
+            x_1, y_1 = Ant.start_location
         else:
             x_1, y_1 = Food.food_positions[self.food_eaten - 1]
         x_2, y_2 = Food.food_positions[self.food_eaten]
         x_3, y_3 = self.x, self.y
 
-        # Step 2: Get the current vector of the ant, and the vector it /should/ be following
-        #   Normalizing for good measure, but this doesn't seem to be necessary
+        # Step 2: Figure how how accurately the ant is moving towards the food
+        angle_between_vectors = None
+        try:
+            # Step 2A: Get the current vector of the ant, and the vector it /should/ be following
+            #   Normalizing for good measure, but this doesn't seem to be necessary
 
-        vector_intended = (x_2 - x_1, y_2 - y_1)
-        vector_current = (x_3 - x_1, y_3 - y_1)
+            vector_intended = (x_2 - x_1, y_2 - y_1)
+            vector_current = (x_3 - x_1, y_3 - y_1)
 
-        vector_intended = Ant.normalize(vector_intended)
-        vector_current = Ant.normalize(vector_current)
+            vector_intended = Ant.normalize(vector_intended)
+            vector_current = Ant.normalize(vector_current)
 
-        # Step 3: Find the angle between these vectors (again, normalized)
+            # Step 2B: Find the angle between these vectors (again, normalized)
 
-        angle_between_vectors = Ant.angle_between_vectors(vector_intended, vector_current)
-        angle_between_vectors /= math.pi
+            angle_between_vectors = Ant.angle_between_vectors(vector_intended, vector_current)
+            angle_between_vectors /= math.pi    # normalizes to pi (eg. pi becomes 1; pi/2 becomes 0.5)
+        except ZeroDivisionError:   # If any vector is 0, treat it as a failure
+                                    # Any movement is better than no movement
+            angle_between_vectors = math.pi
+
+        # Reduce the accuracy of angle measurement because ant behaviour is shifty
+        #   I believe this reduces accuracy by 10%
+        angle_between_vectors = Ant.reduce_accuracy(angle_between_vectors)
+
+        # Step 3: Calculate distance from food
+
+        dist_from_food = self.distance_to_food_normalized()
+        food_weight = 0.25  # arbitrary
+
+        # Reduce the accuracy of distance measurement because ant behaviour is shifty
+        #   I believe this reduces accuracy by 10%
+        dist_from_food = Ant.reduce_accuracy(dist_from_food)
 
         # Step 4: Calculate score
         #   Eating food increases it by 1
         #   Moving in any direction that's not exactly perfect reduces the score, up to a maximum of 1
 
-        score = self.food_eaten - angle_between_vectors
+        score = self.food_eaten - angle_between_vectors - food_weight * dist_from_food
         return score
+
+    @staticmethod
+    def reduce_accuracy(value):
+
+        return round(value / Config.inaccuracy_of_measure) * Config.inaccuracy_of_measure
 
     @staticmethod
     def normalize(vector):
@@ -169,13 +207,7 @@ class Ant(GameObject):
         u_mag = math.sqrt(u[0] ** 2 + u[1] ** 2)
         v_mag = math.sqrt(v[0] ** 2 + v[1] ** 2)
 
-        # try:
         angle = math.acos(u_dot_v / round(u_mag * v_mag, 15))
-        # except :
-        #     print(u_dot_v)
-        #     print(u_mag)
-        #     print(v_mag)
-        #     sys.exit(-1)
 
         return angle
 
