@@ -11,3 +11,4 @@ class Config:
     should_wipe_screen = True
     dist_scoring_leniency = 100
     inaccuracy_of_measure = .05
+    position_sample_rate = ant_TTL / 20            # in seconds

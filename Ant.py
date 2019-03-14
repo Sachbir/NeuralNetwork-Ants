@@ -1,9 +1,11 @@
 import math
+import numpy
 import sys
 from Config import Config
 from Food import Food
 from GameObject import GameObject
 from Network import Network
+from statistics import mean
 
 
 class Ant(GameObject):
@@ -34,6 +36,7 @@ class Ant(GameObject):
         self.food_eaten = None
         self.time_since_eaten = None
         self.direction = None
+        self.points_sampled = []
         self.network = Network()
 
         # Create ant
@@ -48,10 +51,8 @@ class Ant(GameObject):
         self.food_eaten = 0
         self.time_since_eaten = 0
         self.direction = 1  # Whole numbers (non-multiples of pi) avoids future 'divide by zero' errors
+        self.points_sampled = []
         # No need to set direction again; carries over from previous generation, which is random enough
-
-        # Temp?
-        self.death_point = None
 
         # Define ant brain
         if network_data is not None:
@@ -65,6 +66,9 @@ class Ant(GameObject):
         if self.is_alive:
             # Normal life processes
             self.time_since_eaten += 1
+
+            if self.time_since_eaten % (60 * Config.position_sample_rate) == 0:
+                self.points_sampled.append((self.x, self.y))
 
             # Get screen size, and see if ant is inside it
             width, height = Config.screen_size
@@ -146,10 +150,21 @@ class Ant(GameObject):
             #   Normalizing for good measure, but this doesn't seem to be necessary
 
             vector_intended = (x_2 - x_1, y_2 - y_1)
-            vector_current = (x_3 - x_1, y_3 - y_1)
+            vector_overall = (x_3 - x_1, y_3 - y_1)
 
             vector_intended = Ant.normalize(vector_intended)
-            vector_current = Ant.normalize(vector_current)
+            vector_overall = Ant.normalize(vector_overall)
+            vector_current = self.get_line_of_best_fit()
+
+            if math.isnan(vector_current[0]):
+                vector_current = vector_overall
+            else:
+                a = [1, 1]
+                for i in range(2):
+                    if vector_overall[i] < 0:
+                        a[i] = -1
+
+                vector_current = (vector_current[0] * a[0], vector_current[1] * a[1])
 
             # Step 2B: Find the angle between these vectors (again, normalized)
 
@@ -179,6 +194,27 @@ class Ant(GameObject):
         score = self.food_eaten - angle_between_vectors - food_weight * dist_from_food
 
         return score
+
+    def get_line_of_best_fit(self):
+
+        if len(self.points_sampled) == 1:
+            return 0 / 0, 0
+
+        xs = numpy.array([self.points_sampled[i][0]
+                          for i in range(len(self.points_sampled))]
+                         , dtype=numpy.float64)
+        ys = numpy.array([self.points_sampled[i][1]
+                          for i in range(len(self.points_sampled))]
+                         , dtype=numpy.float64)
+
+        m = (mean(xs) * mean(ys) - mean(xs*ys)) / (mean(xs) ** 2 - mean(xs ** 2))
+
+        if abs(m) > 1:
+            v = (1, 1 / m)
+        else:
+            v = (m, 1)
+
+        return v
 
     @staticmethod
     def reduce_accuracy(value):

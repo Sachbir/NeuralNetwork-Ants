@@ -62,7 +62,7 @@ class Simulation:
                     Config.should_wipe_screen = not Config.should_wipe_screen
 
             if start_next_cycle:
-                print("Gen", self.generation_counter, end='')
+                print("Gen", self.generation_counter, end="")
                 self.evolve_ants()
                 Food.need_next_location = True
                 Food.food_positions = []
@@ -86,7 +86,7 @@ class Simulation:
 
         # Sort ants by their ranking
         sorted_ants = sorted(ants, key=(lambda this_ant: this_ant.get_score()), reverse=True)
-        # print("\tBest ant scored", sorted_ants[0].food_eaten)
+        print("\tBest ant scored", sorted_ants[0].food_eaten)
 
         # Top 10% ants are duplicated as is
 
@@ -97,7 +97,7 @@ class Simulation:
             smart_ant_brain = sorted_ants[i].network.get_network_values()
             new_ant = self.world_layers[i].ant
             new_ant.set_network_values(smart_ant_brain, False)
-            print(i, " ", round(sorted_ants[i].get_score(), 3))
+            # print(i, " ", round(sorted_ants[i].get_score(), 3))
             if sorted_ants[i].get_score() < -3.3:
                 sys.exit(-2)
 
