@@ -1,5 +1,4 @@
 from Simulation import Simulation
-import math
 
 
 def main():

@@ -17,19 +17,17 @@ class GameObject:
         self.x = None
         self.y = None
 
-        self.spawn(color, coordinates, None)
+        self.spawn(color, coordinates)
 
     def update(self, *arg):
 
-        # TODO: How does this get updated x and y values?
         if Config.should_render:
             pygame.draw.circle(GameObject.screen,
                                self.color,
                                (round(self.x), round(self.y)),
                                self.__class__.radius)
 
-    # TODO: How do I remove this other parameter when not needed?
-    def spawn(self, color, coordinates, other):
+    def spawn(self, color, coordinates):
 
         self.color = color
         self.x, self.y = coordinates

@@ -33,7 +33,7 @@ class Ant(GameObject):
         self.in_bounds = None
         self.food_eaten = None
         self.time_since_eaten = None
-        self.direction = None      # Whole numbers (non-multiples of pi) avoids future 'divide by zero' errors
+        self.direction = None
         self.network = Network()
 
         # Create ant
@@ -58,7 +58,7 @@ class Ant(GameObject):
             self.network.set_network_values(network_data)
 
         # Respawn ant
-        super().spawn(color, Ant.start_location, network_data)
+        super().spawn(color, Ant.start_location)
 
     def update(self, food):
 
@@ -107,9 +107,6 @@ class Ant(GameObject):
 
     def distance_to_food_normalized(self):
 
-        pos_initial = None
-        pos_target = None
-
         if self.food_eaten == 0:
             pos_initial = Ant.start_location
         else:
@@ -144,7 +141,6 @@ class Ant(GameObject):
         x_3, y_3 = self.x, self.y
 
         # Step 2: Figure how how accurately the ant is moving towards the food
-        angle_between_vectors = None
         try:
             # Step 2A: Get the current vector of the ant, and the vector it /should/ be following
             #   Normalizing for good measure, but this doesn't seem to be necessary
@@ -161,7 +157,7 @@ class Ant(GameObject):
             angle_between_vectors /= math.pi    # normalizes to pi (eg. pi becomes 1; pi/2 becomes 0.5)
         except ZeroDivisionError:   # If any vector is 0, treat it as a failure
                                     # Any movement is better than no movement
-            angle_between_vectors = math.pi
+            angle_between_vectors = 1
 
         # Reduce the accuracy of angle measurement because ant behaviour is shifty
         #   I believe this reduces accuracy by 10%
@@ -181,6 +177,7 @@ class Ant(GameObject):
         #   Moving in any direction that's not exactly perfect reduces the score, up to a maximum of 1
 
         score = self.food_eaten - angle_between_vectors - food_weight * dist_from_food
+
         return score
 
     @staticmethod

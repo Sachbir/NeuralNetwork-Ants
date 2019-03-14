@@ -51,8 +51,7 @@ class WorldLayer:
         # Render
         self.food.update()
         # Returns if ant is dead
-        #   TODO: Figure out why this is inverted
-        return not self.ant.update(self.food)
+        return self.ant.update(self.food)
 
     def modify_color(self):
 
