@@ -30,8 +30,7 @@ class WorldLayer:
             self.ant.spawn(self.color)
             self.food.spawn(self.color)
 
-        if self.food.collides_with(self.ant.x, self.ant.y):   # If ant eats food
-
+        if self.ant.is_alive and self.food.collides_with(self.ant.x, self.ant.y):   # If ant eats food
             # Tell ant it did a good job
             #   Must happen before ant/food spawn (Food spawn location depends on ant score
             self.ant.food_eaten += 1
@@ -50,7 +49,7 @@ class WorldLayer:
 
         # Render
         self.food.update()
-        # Returns if ant is dead
+        # Returns whether and is alive
         return self.ant.update(self.food)
 
     def modify_color(self):
@@ -62,3 +61,8 @@ class WorldLayer:
         self.color = (self.color[0],
                       self.color[1] - WorldLayer.color_change_rate,
                       self.color[2] - WorldLayer.color_change_rate)
+
+    def set_render(self, value):
+
+        self.ant.should_render = value
+        self.food.should_render = value

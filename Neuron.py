@@ -15,7 +15,7 @@ class Neuron:
     # Given an array of inputs, return an output
     def get_output(self, inputs):
 
-        result = self.weights[-1]   # bia value
+        result = self.weights[-1]   # bias value
         for i in range(0, len(inputs)):
             result += inputs[i] * self.weights[i]
 

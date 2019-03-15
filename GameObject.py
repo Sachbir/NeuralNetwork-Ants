@@ -16,12 +16,13 @@ class GameObject:
         self.color = None
         self.x = None
         self.y = None
+        self.should_render = True
 
         self.spawn(color, coordinates)
 
     def update(self, *arg):
 
-        if Config.should_render:
+        if self.should_render:
             pygame.draw.circle(GameObject.screen,
                                self.color,
                                (round(self.x), round(self.y)),

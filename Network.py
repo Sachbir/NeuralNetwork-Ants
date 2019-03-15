@@ -1,5 +1,6 @@
 from NeuronLayer import NeuronLayer
 from Config import Config
+from multiprocessing import Pool
 
 
 class Network:
@@ -12,6 +13,10 @@ class Network:
     def get_output(self, inputs):
 
         current_array = inputs
+
+        # with Pool(2) as p:
+        #     for i in range(len(self.layers)):
+        #         current_array = p.map(Network.parallelize, self.layers, current_array)
 
         for i in range(len(self.layers)):
             current_array = self.layers[i].get_outputs(current_array)

@@ -1,0 +1,4 @@
+TODO:
+- read ant brain from file
+- add a selective pressure that any movement is better than none
+- make network and connections generate randomly, rather than fixed

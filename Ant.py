@@ -1,6 +1,7 @@
 import math
+
 import numpy
-import sys
+
 from Config import Config
 from Food import Food
 from GameObject import GameObject
@@ -51,7 +52,7 @@ class Ant(GameObject):
         self.food_eaten = 0
         self.time_since_eaten = 0
         self.direction = 1  # Whole numbers (non-multiples of pi) avoids future 'divide by zero' errors
-        self.points_sampled = []
+        # self.points_sampled = []
         # No need to set direction again; carries over from previous generation, which is random enough
 
         # Define ant brain
@@ -67,8 +68,8 @@ class Ant(GameObject):
             # Normal life processes
             self.time_since_eaten += 1
 
-            if self.time_since_eaten % (60 * Config.position_sample_rate) == 0:
-                self.points_sampled.append((self.x, self.y))
+            # if self.time_since_eaten % (60 * Config.position_sample_rate) == 0:
+            #     self.points_sampled.append((self.x, self.y))
 
             # Get screen size, and see if ant is inside it
             width, height = Config.screen_size
@@ -79,12 +80,11 @@ class Ant(GameObject):
                 # If ant leaves screen, or hasn't eaten for a while, kill it
                 self.is_alive = False
                 return self.is_alive
-            else:
-                nn_inputs = self.prepare_nn_inputs(food)
-                turn_amount = self.network.get_output(nn_inputs)      # Neural network solution
-                # turn_amount = self.turn_decision(food)              # Hard-coded solution
-                self.move(turn_amount)
-                super().update()
+            nn_inputs = self.prepare_nn_inputs(food)
+            turn_amount = self.network.get_output(nn_inputs)      # Neural network solution
+            # turn_amount = self.turn_decision(food)              # Hard-coded solution
+            self.move(turn_amount)
+            super().update()
         return self.is_alive
 
     def move(self, turn_amount):
