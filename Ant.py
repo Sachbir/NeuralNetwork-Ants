@@ -154,17 +154,20 @@ class Ant(GameObject):
 
             vector_intended = Ant.normalize(vector_intended)
             vector_overall = Ant.normalize(vector_overall)
-            vector_current = self.get_line_of_best_fit()
-
-            if math.isnan(vector_current[0]):
-                vector_current = vector_overall
-            else:
-                a = [1, 1]
-                for i in range(2):
-                    if vector_overall[i] < 0:
-                        a[i] = -1
-
-                vector_current = (vector_current[0] * a[0], vector_current[1] * a[1])
+            vector_current = vector_overall
+            # TODO: Idea - use origin point and 2/3 points near the end to calculate vector, not just beginning and end
+            #   advantage: helps eliminate randomness from spiral looseness
+            # vector_current = self.get_line_of_best_fit()
+            #
+            # if math.isnan(vector_current[0]):
+            #     vector_current = vector_overall
+            # else:
+            #     a = [1, 1]
+            #     for i in range(2):
+            #         if vector_overall[i] < 0:
+            #             a[i] = -1
+            #
+            #     vector_current = (vector_current[0] * a[0], vector_current[1] * a[1])
 
             # Step 2B: Find the angle between these vectors (again, normalized)
 
@@ -177,11 +180,12 @@ class Ant(GameObject):
         # Reduce the accuracy of angle measurement because ant behaviour is shifty
         #   I believe this reduces accuracy by 10%
         angle_between_vectors = Ant.reduce_accuracy(angle_between_vectors)
+        angle_weight = 0.5  # arbitrary
 
         # Step 3: Calculate distance from food
 
         dist_from_food = self.distance_to_food_normalized()
-        food_weight = 0.25  # arbitrary
+        food_weight = 0.5  # arbitrary
 
         # Reduce the accuracy of distance measurement because ant behaviour is shifty
         #   I believe this reduces accuracy by 10%
@@ -191,7 +195,10 @@ class Ant(GameObject):
         #   Eating food increases it by 1
         #   Moving in any direction that's not exactly perfect reduces the score, up to a maximum of 1
 
-        score = self.food_eaten - angle_between_vectors - food_weight * dist_from_food
+        # TODO: Implement a strategy to score ants based on proximity of food to path
+        # https://stackoverflow.com/questions/24415806/coordinate-of-the-closest-point-on-a-line#24440122
+        # score = self.food_eaten - angle_between_vectors - food_weight * dist_from_food
+        score = self.food_eaten - food_weight * dist_from_food - angle_weight * angle_between_vectors
 
         return score
 
