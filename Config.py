@@ -1,7 +1,7 @@
 class Config:
 
     sim_speed_multiplier = 10               # maximum; in practice may be less
-    num_of_ants = 100
+    num_of_ants = 50
 
     screen_size = (800, 800)
     render_state = 2
@@ -10,7 +10,7 @@ class Config:
     ant_move_modifier = 1                   # move faster, turn harder
     ant_TTL = 10                            # in seconds
 
-    network_configuration = [5, 10, 10, 1]  # 5 ... 1 formula is required
+    network_config = [5, 10, 10, 1]         # 5 ... 1 formula is required
                                             # higher makes no difference, lower breaks it
     variance_range = 0.025                  # the amount each ant's children differ from it
 

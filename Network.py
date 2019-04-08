@@ -7,8 +7,8 @@ class Network:
 
     def __init__(self):
 
-        self.layers = [NeuronLayer(Config.network_configuration[i], Config.network_configuration[i + 1])
-                       for i in range(len(Config.network_configuration) - 1)]
+        self.layers = [NeuronLayer(Config.network_config[i], Config.network_config[i + 1])
+                       for i in range(len(Config.network_config) - 1)]
 
     def get_output(self, inputs):
 
