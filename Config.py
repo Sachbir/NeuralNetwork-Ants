@@ -10,7 +10,7 @@ class Config:
     ant_move_modifier = 1                   # move faster, turn harder
     ant_TTL = 10                            # in seconds
 
-    network_configuration = [5, 10, 10, 1]  # 5 ... 1 formula is required
+    network_config = [5, 10, 10, 1]         # 5 ... 1 formula is required
                                             # higher makes no difference, lower breaks it
     variance_range = 0.025                  # the amount each ant's children differ from it
 
