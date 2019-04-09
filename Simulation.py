@@ -121,7 +121,7 @@ class Simulation:
                                     str(best_ant_in_gen.network.get_network_values()))
 
         Simulation.output_text()
-        self.create_next_generation(sorted_ants)
+        # self.create_next_generation(sorted_ants)
 
     def create_next_generation(self, sorted_ants):
 

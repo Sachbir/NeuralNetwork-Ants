@@ -5,7 +5,7 @@ import numpy
 from Config import Config
 from Food import Food
 from GameObject import GameObject
-from Network import Network
+from Network2 import Network
 from statistics import mean
 
 
