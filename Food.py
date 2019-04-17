@@ -9,7 +9,7 @@ class Food(GameObject):
 
     food_positions = []
 
-    radius = 4
+    radius = 3
 
     # Stay away from the walls by some percent of height
     #   height because it's typically smaller than width
