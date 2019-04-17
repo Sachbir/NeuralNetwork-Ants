@@ -10,6 +10,9 @@ class Simulation:
 
     pygame.init()
     screen = pygame.display.set_mode(Config.screen_size)
+    pygame.display.set_caption("Neural Network - Ants")
+    icon = pygame.image.load("icon.jpg")
+    pygame.display.set_icon(icon)
 
     log_file = "ant_log.txt"
     best_ant_file = "best_ant_brain.txt"

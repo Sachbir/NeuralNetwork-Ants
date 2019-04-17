@@ -1,7 +1,7 @@
 class Config:
 
     sim_speed_multiplier = 10               # maximum; in practice may be less
-    num_of_ants = 50
+    num_of_ants = 200
 
     screen_size = (800, 800)
     render_state = 2
