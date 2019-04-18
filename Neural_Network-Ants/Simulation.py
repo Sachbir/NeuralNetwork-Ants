@@ -5,6 +5,8 @@ from Config import Config
 from Food import Food
 from WorldLayer import WorldLayer
 
+import json
+
 
 class Simulation:
 
@@ -16,6 +18,7 @@ class Simulation:
 
     log_file = "ant_log.txt"
     best_ant_file = "best_ant_brain.txt"
+    last_gen_file = "last_gen_gene_pool.txt"
 
     def __init__(self):
 
@@ -77,13 +80,40 @@ class Simulation:
                 Simulation.output_text()
             if event.type == pygame.KEYDOWN and event.key == pygame.K_f:  # Print food location
                 WorldLayer.should_print_food_coordinates = not WorldLayer.should_print_food_coordinates
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_s:  # Start next cycle
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_n:  # Start next cycle
                 self.generation_counter += 1
                 start_next_cycle = True
             if event.type == pygame.KEYDOWN and event.key == pygame.K_w:  # Show path
                 Config.should_wipe_screen = not Config.should_wipe_screen
             if event.type == pygame.KEYDOWN and event.key == pygame.K_r:  # Toggle between rendering states
                 self.render_mode()
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_b:  # Load best ant
+                with open(Simulation.best_ant_file, "r") as best_ant_file:
+                    self.generation_counter = int(best_ant_file.readline())
+                    best_ant_score = best_ant_file.readline()
+                    brain_text = best_ant_file.readline()
+                    brain = json.loads(brain_text)
+                    ant = self.world_layers[0].ant
+                    ant.network.set_network_values(brain, False)
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_s:  # Save generation
+                with open(Simulation.last_gen_file, "w") as last_gen_file:
+                    last_gen_file.write(str(self.generation_counter))
+                    for layer in self.world_layers:
+                        ant_brain = layer.ant.network.get_network_values()
+                        last_gen_file.write("\n" + str(ant_brain))
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_l:  # Load best ant
+                with open(Simulation.last_gen_file, "r") as last_gen_file:
+                    self.generation_counter = int(last_gen_file.readline())
+
+                    i = 0
+                    ant_brain_text = last_gen_file.readline()
+
+                    while ant_brain_text and i < Config.num_of_ants:
+                        ant_brain = json.loads(ant_brain_text)
+                        self.world_layers[i].ant.set_network_values(ant_brain)
+
+                        ant_brain_text = last_gen_file.readline()
+                        i += 1
 
         return start_next_cycle
 
@@ -111,16 +141,20 @@ class Simulation:
 
         # Sort ants by their score
         sorted_ants = sorted(ants, key=(lambda this_ant: this_ant.get_score()), reverse=True)
-        Simulation.output_text("\tBest ant scored " + str(sorted_ants[0].food_eaten) + "\n")
+        self.best_score = sorted_ants[0].food_eaten
+        Simulation.write_to_file("\tBest ant scored " + str(self.best_score) + "\n")
 
         # If this generation contains the best ant ever, save it to a file
         with open(Simulation.best_ant_file, "r") as best_ant_file:
-            most_food_ever_eaten = int(best_ant_file.readline())
+            gen_count = best_ant_file.readline()                # First line
+            most_food_ever_eaten = best_ant_file.readline()     # Second line
+            most_food_ever_eaten = int(most_food_ever_eaten)    # To int
 
         best_ant_in_gen = sorted_ants[0]
         if best_ant_in_gen.food_eaten > most_food_ever_eaten:
             with open(Simulation.best_ant_file, "w") as best_ant_file:
-                best_ant_file.write(str(best_ant_in_gen.food_eaten) + "\n" +
+                best_ant_file.write(str(self.generation_counter) + "\n" +
+                                    str(best_ant_in_gen.food_eaten) + "\n" +
                                     str(best_ant_in_gen.network.get_network_values()))
 
         Simulation.output_text()

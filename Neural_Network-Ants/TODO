@@ -1,3 +1,5 @@
 TODO:
-- read ant brain from file
-- add a selective pressure that any movement is better than none
+- save and load entire generation from file
+- selective pressures:
+    - any movement is better than none
+    - faster is better

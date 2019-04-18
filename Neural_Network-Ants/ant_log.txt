@@ -1,4 +1,41 @@
 ---BEGIN---
 
-
-----END----
+Gen 3	Best ant scored 0
+Gen 4	Best ant scored 1
+Gen 5	Best ant scored 1
+Gen 6	Best ant scored 0
+Gen 7	Best ant scored 0
+Gen 8	Best ant scored 0
+Gen 9	Best ant scored 0
+Gen 10	Best ant scored 0
+Gen 11	Best ant scored 1
+Gen 12	Best ant scored 1
+Gen 13	Best ant scored 1
+Gen 14	Best ant scored 1
+Gen 15	Best ant scored 1
+Gen 16	Best ant scored 0
+Gen 17	Best ant scored 0
+Gen 18	Best ant scored 0
+Gen 19	Best ant scored 0
+Gen 20	Best ant scored 0
+Gen 21	Best ant scored 1
+Gen 22	Best ant scored 0
+Gen 23	Best ant scored 1
+Gen 24	Best ant scored 1
+Gen 25	Best ant scored 1
+Gen 26	Best ant scored 1
+Gen 27	Best ant scored 1
+Gen 28	Best ant scored 1
+Gen 29	Best ant scored 1
+Gen 30	Best ant scored 1
+Gen 31	Best ant scored 1
+Gen 32	Best ant scored 1
+Gen 33	Best ant scored 1
+Gen 34	Best ant scored 1
+Gen 35	Best ant scored 1
+Gen 36	Best ant scored 2
+Gen 37	Best ant scored 1
+Gen 38	Best ant scored 1
+Gen 39	Best ant scored 1
+Gen 40	Best ant scored 1
+Gen 41	Best ant scored 0

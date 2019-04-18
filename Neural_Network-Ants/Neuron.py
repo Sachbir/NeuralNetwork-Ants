@@ -31,14 +31,15 @@ class Neuron:
 
     def set_neuron_values(self, values, should_modify):
 
-        rounding = 15   # Is this still needed?
+        # rounding = 15   # Is this still needed?
 
         for i in range(len(self.weights)):
             random_deviation = 0
             if should_modify:
                 # Deviate neuron values within a given range
                 random_deviation = random.uniform(-Config.variance_range, Config.variance_range)
-            self.weights[i] = round(values[i], rounding) + random_deviation
+            # self.weights[i] = round(values[i], rounding) + random_deviation
+            self.weights[i] = values[i] + random_deviation
 
     @staticmethod
     def modified_sigmoid(x):
