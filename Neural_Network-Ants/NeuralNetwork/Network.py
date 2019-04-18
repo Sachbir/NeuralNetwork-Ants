@@ -1,6 +1,5 @@
-from NeuronLayer import NeuronLayer
+from NeuralNetwork.NeuronLayer import NeuronLayer
 from Config import Config
-from multiprocessing import Pool
 
 
 class Network:

@@ -1,4 +1,4 @@
-from Neuron import Neuron
+from NeuralNetwork.Neuron import Neuron
 
 
 class NeuronLayer:

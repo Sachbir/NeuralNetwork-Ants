@@ -2,14 +2,14 @@ import math
 import pygame
 import random
 from Config import Config
-from GameObject import GameObject
+from Entities.GameObject import GameObject
 
 
 class Food(GameObject):
 
     food_positions = []
 
-    radius = 3
+    radius = 2
 
     # Stay away from the walls by some percent of height
     #   height because it's typically smaller than width
@@ -35,7 +35,11 @@ class Food(GameObject):
 
     def update(self, *args):
         super().update()
-        # pygame.draw.rect(self.screen, self.color, self.collision_box)     # for debugging
+        pygame.draw.circle(GameObject.screen,
+                           self.color,
+                           (round(self.x), round(self.y)),
+                           5,
+                           1)
 
     def spawn(self, color, coordinates=None, other=None):    # Other because of some ant stupidity
 

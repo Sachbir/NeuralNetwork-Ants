@@ -1,5 +1,5 @@
-from Ant import Ant
-from Food import Food
+from Entities.Ant import Ant
+from Entities.Food import Food
 
 
 class WorldLayer:

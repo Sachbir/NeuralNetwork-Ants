@@ -1,8 +1,9 @@
 import math
 import pygame
+from pygame import freetype
 import sys
 from Config import Config
-from Food import Food
+from Entities.Food import Food
 from WorldLayer import WorldLayer
 
 import json
@@ -16,9 +17,14 @@ class Simulation:
     icon = pygame.image.load("icon.jpg")
     pygame.display.set_icon(icon)
 
-    log_file = "ant_log.txt"
-    best_ant_file = "best_ant_brain.txt"
-    last_gen_file = "last_gen_gene_pool.txt"
+    pygame.font.init()
+    pygame.freetype.init()
+    system_font = pygame.freetype.get_default_font()
+    text = pygame.freetype.SysFont(system_font, 20)
+
+    log_file = "DataFiles/ant_log.txt"
+    best_ant_file = "DataFiles/best_ant_brain.txt"
+    last_gen_file = "DataFiles/last_gen_gene_pool.txt"
 
     def __init__(self):
 
@@ -31,11 +37,19 @@ class Simulation:
         self.best_score = 0
         self.generation_counter = 0
 
-        Simulation.output_text("", "w")
+        # with open(Simulation.best_ant_file, "r") as best_ant_file:
+        #     self.generation_counter = int(best_ant_file.readline())
+        #     best_and_score = best_ant_file.readline()
+        #     brain_text = best_ant_file.readline()
+        #     brain = json.loads(brain_text)
+        #     ant = self.world_layers[0].ant
+        #     ant.network.set_network_values(brain, False)
+
+        Simulation.write_to_file("", "w")
 
     def run(self):
 
-        Simulation.output_text("---BEGIN---\n")
+        Simulation.write_to_file("---BEGIN---\n\n")
         while True:
 
             start_next_cycle = False
@@ -48,12 +62,16 @@ class Simulation:
             start_next_cycle = self.process_events(start_next_cycle)
 
             if start_next_cycle:
-                Simulation.output_text("Gen " + str(self.generation_counter))
+                Simulation.write_to_file("Gen " + str(self.generation_counter))
                 self.evolve_ants()
                 Food.need_next_location = True
                 Food.food_positions = []
             if start_next_cycle or Config.should_wipe_screen:
                 Simulation.screen.fill((225, 225, 225))  # Off-white
+                Simulation.text.render_to(pygame.display.get_surface(),
+                                          (11, 12),     # Offset looks better visually, even if mathematically imperfect
+                                          "Gen " + str(self.generation_counter + 1) +
+                                          " | Best Score of Last Round: " + str(self.best_score))
             # Updates in here!
             for layer in self.world_layers:
                 self.ants_alive -= not layer.update(start_next_cycle)   # Layer returns if any is alive
@@ -69,7 +87,7 @@ class Simulation:
         for event in pygame.event.get():
             if (event.type == pygame.QUIT or
                     (event.type == pygame.KEYDOWN and event.key == pygame.K_q)):  # End simulation
-                Simulation.output_text("\n\n----END----\n")
+                Simulation.write_to_file("\n----END----\n")
                 sys.exit(0)
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:  # Restart cycle
                 # TODO: Broken; need to fix this
@@ -77,7 +95,7 @@ class Simulation:
                     layer.__init__()
                 self.generation_counter = 1
                 start_next_cycle = True
-                Simulation.output_text()
+                Simulation.write_to_file()
             if event.type == pygame.KEYDOWN and event.key == pygame.K_f:  # Print food location
                 WorldLayer.should_print_food_coordinates = not WorldLayer.should_print_food_coordinates
             if event.type == pygame.KEYDOWN and event.key == pygame.K_n:  # Start next cycle
@@ -157,7 +175,7 @@ class Simulation:
                                     str(best_ant_in_gen.food_eaten) + "\n" +
                                     str(best_ant_in_gen.network.get_network_values()))
 
-        Simulation.output_text()
+        Simulation.write_to_file()
         self.create_next_generation(sorted_ants)
 
     def create_next_generation(self, sorted_ants):
@@ -183,8 +201,7 @@ class Simulation:
                 new_ant.set_network_values(smart_ant_brain, True)
 
     @staticmethod
-    def output_text(message="", mode="a"):
+    def write_to_file(message="", mode="a"):
 
-        print(message, end="")
         with open(Simulation.log_file, mode) as log_file:
             log_file.write(message)

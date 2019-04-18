@@ -3,9 +3,9 @@ import math
 import numpy
 
 from Config import Config
-from Food import Food
-from GameObject import GameObject
-from Network import Network
+from Entities.Food import Food
+from Entities.GameObject import GameObject
+from NeuralNetwork.Network import Network
 from statistics import mean
 
 
@@ -16,7 +16,7 @@ class Ant(GameObject):
         # positive y is downwards (inverted)
         # positive rotation is counterclockwise (inverted)
 
-    radius = 8
+    radius = 4
     speed = 5
 
     start_location = (Config.screen_size[0] / 2,
