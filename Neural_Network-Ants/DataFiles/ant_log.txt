@@ -1,6 +1,4 @@
 ---BEGIN---
 
-Gen 110	Best ant scored 1
-Gen 111	Best ant scored 1
 
 ----END----

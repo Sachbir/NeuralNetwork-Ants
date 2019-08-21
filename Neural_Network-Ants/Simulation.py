@@ -13,10 +13,12 @@ class Simulation:
 
     # Set up the pygame environment
     pygame.init()
-    screen = pygame.display.set_mode(Config.screen_size)
+
     pygame.display.set_caption("Neural Network - Ants")
     icon = pygame.image.load("icon.jpg")
     pygame.display.set_icon(icon)
+
+    screen = pygame.display.set_mode(Config.screen_size)
 
     pygame.font.init()
     pygame.freetype.init()
@@ -51,21 +53,7 @@ class Simulation:
 
     def run(self):
 
-        # Bootleg injection
-        # Load previous generation on start
-
-        with open(Simulation.last_gen_file, "r") as last_gen_file:
-            self.generation_counter = int(last_gen_file.readline())
-
-            i = 0
-            ant_brain_text = last_gen_file.readline()
-
-            while ant_brain_text and i < Config.num_of_ants:
-                ant_brain = json.loads(ant_brain_text)
-                self.world_layers[i].ant.set_network_values(ant_brain)
-
-                ant_brain_text = last_gen_file.readline()
-                i += 1
+        self.start_menu()
 
         Simulation.write_to_log("---BEGIN---\n\n")
         while True:
@@ -105,62 +93,53 @@ class Simulation:
         for event in pygame.event.get():
             if (event.type == pygame.QUIT or
                     (event.type == pygame.KEYDOWN and event.key == pygame.K_q)):  # End simulation
-
-                # Bootleg injection
-                # Save generation on quit
-
-                with open(Simulation.last_gen_file, "w") as last_gen_file:
-                    last_gen_file.write(str(self.generation_counter - 1))
-                    for layer in self.world_layers:
-                        ant_brain = layer.previous_ant.network.get_network_values()
-                        last_gen_file.write("\n" + str(ant_brain))
-
                 Simulation.write_to_log("\n----END----\n")
-                sys.exit(0)
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:  # Restart cycle
-                # TODO: Broken; need to fix this
-                print("Space is disabled")
-                # for layer in self.world_layers:
-                #     layer.__init__()
-                # self.generation_counter = 1
-                # start_next_cycle = True
-                # Simulation.write_to_file()
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_f:  # Print food location
-                WorldLayer.should_print_food_coordinates = not WorldLayer.should_print_food_coordinates
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_n:  # Start next cycle
-                self.generation_counter += 1
-                start_next_cycle = True
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_w:  # Show path
-                Config.should_wipe_screen = not Config.should_wipe_screen
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_r:  # Toggle between rendering states
-                self.render_mode()
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_b:  # Load best ant
-                with open(Simulation.best_ant_file, "r") as best_ant_file:
-                    self.generation_counter = int(best_ant_file.readline())
-                    best_ant_score = best_ant_file.readline()
-                    brain_text = best_ant_file.readline()
-                    brain = json.loads(brain_text)
-                    ant = self.world_layers[0].ant
-                    ant.network.set_network_values(brain, False)
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_s:  # Save generation
-                with open(Simulation.last_gen_file, "w") as last_gen_file:
-                    last_gen_file.write(str(self.generation_counter - 1))
-                    for layer in self.world_layers:
-                        ant_brain = layer.previous_ant.network.get_network_values()
-                        last_gen_file.write("\n" + str(ant_brain))
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_l:  # Load generation
-                with open(Simulation.last_gen_file, "r") as last_gen_file:
-                    self.generation_counter = int(last_gen_file.readline())
+                self.exit_menu()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:  # Restart cycle
+                    # TODO: Broken; need to fix this
+                    print("Space is disabled")
+                    # for layer in self.world_layers:
+                    #     layer.__init__()
+                    # self.generation_counter = 1
+                    # start_next_cycle = True
+                    # Simulation.write_to_file()
+                if event.key == pygame.K_f:  # Print food location
+                    WorldLayer.should_print_food_coordinates = not WorldLayer.should_print_food_coordinates
+                if event.key == pygame.K_n:  # Start next cycle
+                    self.generation_counter += 1
+                    start_next_cycle = True
+                if event.key == pygame.K_w:  # Show path
+                    Config.should_wipe_screen = not Config.should_wipe_screen
+                if event.key == pygame.K_r:  # Toggle between rendering states
+                    self.render_mode()
+                if event.key == pygame.K_b:  # Load best ant
+                    with open(Simulation.best_ant_file, "r") as best_ant_file:
+                        self.generation_counter = int(best_ant_file.readline())
+                        best_ant_score = best_ant_file.readline()
+                        brain_text = best_ant_file.readline()
+                        brain = json.loads(brain_text)
+                        ant = self.world_layers[0].ant
+                        ant.network.set_network_values(brain, False)
+                if event.key == pygame.K_s:  # Save generation
+                    with open(Simulation.last_gen_file, "w") as last_gen_file:
+                        last_gen_file.write(str(self.generation_counter - 1))
+                        for layer in self.world_layers:
+                            ant_brain = layer.previous_ant.network.get_network_values()
+                            last_gen_file.write("\n" + str(ant_brain))
+                if event.key == pygame.K_l:  # Load generation
+                    with open(Simulation.last_gen_file, "r") as last_gen_file:
+                        self.generation_counter = int(last_gen_file.readline())
 
-                    i = 0
-                    ant_brain_text = last_gen_file.readline()
-
-                    while ant_brain_text and i < Config.num_of_ants:
-                        ant_brain = json.loads(ant_brain_text)
-                        self.world_layers[i].ant.set_network_values(ant_brain)
-
+                        i = 0
                         ant_brain_text = last_gen_file.readline()
-                        i += 1
+
+                        while ant_brain_text and i < Config.num_of_ants:
+                            ant_brain = json.loads(ant_brain_text)
+                            self.world_layers[i].ant.set_network_values(ant_brain)
+
+                            ant_brain_text = last_gen_file.readline()
+                            i += 1
 
         return start_next_cycle
 
@@ -237,3 +216,56 @@ class Simulation:
 
         with open(Simulation.log_file, mode) as log_file:
             log_file.write(message)
+
+    def start_menu(self):
+
+        Simulation.screen.fill((225, 225, 225))  # Off-white
+        Simulation.text.render_to(pygame.display.get_surface(), (11, 12), "Welcome!")
+        Simulation.text.render_to(pygame.display.get_surface(), (11, 36), "1 - Start New Simulation")
+        Simulation.text.render_to(pygame.display.get_surface(), (11, 60), "2 - Load From Previous Data")
+        Simulation.text.render_to(pygame.display.get_surface(), (11, 84), "Q - Quit")
+        pygame.display.flip()
+
+        while True:
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_q):
+                    sys.exit(0)
+                elif event.type == pygame.KEYDOWN and event.key == pygame.K_1:  # Start new
+                    return
+                elif event.type == pygame.KEYDOWN and event.key == pygame.K_2:  # Load data
+                    with open(Simulation.last_gen_file, "r") as last_gen_file:
+                        self.generation_counter = int(last_gen_file.readline())
+
+                        i = 0
+                        ant_brain_text = last_gen_file.readline()
+
+                        while ant_brain_text and i < Config.num_of_ants:
+                            ant_brain = json.loads(ant_brain_text)
+                            self.world_layers[i].ant.set_network_values(ant_brain)
+
+                            ant_brain_text = last_gen_file.readline()
+                            i += 1
+                    return
+            self.clock.tick(60)  # 60 ticks/second
+
+    def exit_menu(self):
+
+        Simulation.screen.fill((225, 225, 225))  # Off-white
+        Simulation.text.render_to(pygame.display.get_surface(), (11, 12), "1 - Save and Quit")
+        Simulation.text.render_to(pygame.display.get_surface(), (11, 36), "2 - Quit without saving")
+        pygame.display.flip()
+
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_1:  # Save and quit
+                    with open(Simulation.last_gen_file, "w") as last_gen_file:
+                        last_gen_file.write(str(self.generation_counter - 1))
+                        for layer in self.world_layers:
+                            ant_brain = layer.previous_ant.network.get_network_values()
+                            last_gen_file.write("\n" + str(ant_brain))
+                    sys.exit(0)
+                elif event.type == pygame.KEYDOWN and event.key == pygame.K_2:  # Quit without saving
+                    sys.exit(0)
+
+            self.clock.tick(60)  # 60 ticks/second
