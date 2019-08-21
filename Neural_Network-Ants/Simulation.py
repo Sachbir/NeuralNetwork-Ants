@@ -75,7 +75,7 @@ class Simulation:
             if start_next_cycle or Config.should_wipe_screen:
                 Simulation.screen.fill((225, 225, 225))  # Off-white
                 Simulation.text.render_to(pygame.display.get_surface(),
-                                          (11, 12),     # Offset looks better visually, even if mathematically imperfect
+                                          (11, 12),  # Offset looks better visually, even if mathematically imperfect
                                           "Gen " + str(self.generation_counter + 1) +
                                           " | Best Score of Last Round: " + str(self.best_score))
             # Updates in here!
@@ -188,28 +188,19 @@ class Simulation:
 
     def create_next_generation(self, sorted_ants):
 
-        ten_percent = math.floor(Config.num_of_ants * .1)
-
         for layer in self.world_layers:
             layer.previous_ant = layer.ant
 
-        # Copy the top 10%'s' brains perfectly
-        for i in range(ten_percent):
-            smart_ant_brain = sorted_ants[i].network.get_network_values()
-            new_ant = self.world_layers[i].ant
-            new_ant.set_network_values(smart_ant_brain, False)
-            if sorted_ants[i].get_score() < -3.3:
-                sys.exit(-2)
+        num_ants_over_2 = math.floor(Config.num_of_ants / 2)
 
-        # Pass on the top 9%'s brains, with some variance
-        for i in range(ten_percent - 1):  # Don't copy the last ant, otherwise you hit 110% (Due to cloning)
-            smart_ant_brain = sorted_ants[i].network.get_network_values()
-            for j in range(ten_percent):
-                if 10 * (i + 1) + j == Config.num_of_ants:
-                    break
-                ant_num = 10 * (i + 1) + j
-                new_ant = self.world_layers[ant_num].ant
-                new_ant.set_network_values(smart_ant_brain, True)
+        for i in range(num_ants_over_2):
+            ant_brain = sorted_ants[i].network.get_network_values()
+            # Create 1 identical copy of each ant
+            new_ant = self.world_layers[i].ant
+            new_ant.set_network_values(ant_brain, False)
+            # Create 1 slightly altered copy of each ant
+            new_ant = self.world_layers[i + num_ants_over_2].ant
+            new_ant.set_network_values(ant_brain, False)
 
     @staticmethod
     def write_to_log(message="", mode="a"):

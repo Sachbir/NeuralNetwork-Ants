@@ -130,104 +130,11 @@ class Ant(GameObject):
 
     def get_score(self):
 
-        # calculate score based on food eaten and current vector
-        # ants that have eaten food do well
-        # ants moving away from food do poorly
-        # ants that move slowly do poorly as well
+        # calculate score based on the following:
+        #   1. food eaten -> more eaten = better
+        #   2. proximity to food -> closer = better
 
-        # Step 1: Get location of previous food, next food, and ant's death location
-        #   If ant eats nothing, the 'previous food' location can be treated as the spawn-point
-
-        if self.food_eaten == 0:
-            x_1, y_1 = Ant.start_location
-        else:
-            x_1, y_1 = Food.food_positions[self.food_eaten - 1]
-        x_2, y_2 = Food.food_positions[self.food_eaten]
-        x_3, y_3 = self.x, self.y
-
-        # Step 2: Figure how how accurately the ant is moving towards the food
-        try:
-            # Step 2A: Get the current vector of the ant, and the vector it /should/ be following
-            #   Normalizing for good measure, but this doesn't seem to be necessary
-
-            vector_intended = (x_2 - x_1, y_2 - y_1)
-            vector_overall = (x_3 - x_1, y_3 - y_1)
-
-            vector_intended = Ant.normalize(vector_intended)
-            vector_overall = Ant.normalize(vector_overall)
-            vector_current = vector_overall
-            # TODO: Idea - use origin point and 2-3 points near the end to calculate vector, not just beginning and end
-            #   advantage: helps eliminate randomness from spiral looseness
-            # vector_current = self.get_line_of_best_fit()
-            #
-            # if math.isnan(vector_current[0]):
-            #     vector_current = vector_overall
-            # else:
-            #     a = [1, 1]
-            #     for i in range(2):
-            #         if vector_overall[i] < 0:
-            #             a[i] = -1
-            #
-            #     vector_current = (vector_current[0] * a[0], vector_current[1] * a[1])
-
-            # Step 2B: Find the angle between these vectors (again, normalized)
-
-            angle_between_vectors = Ant.angle_between_vectors(vector_intended, vector_current)
-            angle_between_vectors /= math.pi    # normalizes to pi (eg. pi becomes 1; pi/2 becomes 0.5)
-        except ZeroDivisionError:   # If any vector is 0, treat it as a failure
-                                    # Any movement is better than no movement
-            angle_between_vectors = 1
-
-        # Reduce the accuracy of angle measurement because ant behaviour is shifty
-        #   I believe this reduces accuracy by 10%
-        angle_between_vectors = Ant.reduce_accuracy(angle_between_vectors)
-        angle_weight = 0.5  # arbitrary
-
-        # Step 3: Calculate distance from food
-
-        dist_from_food = self.distance_to_food_normalized()
-        food_weight = 0.5  # arbitrary
-
-        # Reduce the accuracy of distance measurement because ant behaviour is shifty
-        #   I believe this reduces accuracy by 10%
-        dist_from_food = Ant.reduce_accuracy(dist_from_food)
-
-        # Step 4: Calculate score
-        #   Eating food increases it by 1
-        #   Moving in any direction that's not exactly perfect reduces the score, up to a maximum of 1
-
-        # TODO: Implement a strategy to score ants based on proximity of food to path
-        # https://stackoverflow.com/questions/24415806/coordinate-of-the-closest-point-on-a-line#24440122
-        # score = self.food_eaten - angle_between_vectors - food_weight * dist_from_food
-        score = self.food_eaten - food_weight * dist_from_food - angle_weight * angle_between_vectors
-
-        return score
-
-    def get_line_of_best_fit(self):
-
-        if len(self.points_sampled) == 1:
-            return 0 / 0, 0
-
-        xs = numpy.array([self.points_sampled[i][0]
-                          for i in range(len(self.points_sampled))]
-                         , dtype=numpy.float64)
-        ys = numpy.array([self.points_sampled[i][1]
-                          for i in range(len(self.points_sampled))]
-                         , dtype=numpy.float64)
-
-        m = (mean(xs) * mean(ys) - mean(xs*ys)) / (mean(xs) ** 2 - mean(xs ** 2))
-
-        if abs(m) > 1:
-            v = (1, 1 / m)
-        else:
-            v = (m, 1)
-
-        return v
-
-    @staticmethod
-    def reduce_accuracy(value):
-
-        return round(value / Config.inaccuracy_of_measure) * Config.inaccuracy_of_measure
+        return self.food_eaten - self.distance_to_food_normalized()
 
     @staticmethod
     def normalize(vector):
