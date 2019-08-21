@@ -20,6 +20,8 @@ class WorldLayer:
         self.ant = Ant(self, self.color)
         self.food = Food(self.color, self.ant)   # WorldLayer.food_location)
 
+        self.previous_ant = self.ant
+
     def update(self, start_next_cycle=False):
 
         if start_next_cycle:

@@ -24,19 +24,12 @@ class Network:
                 layer.append(neuron)
             self.network.append(layer)
 
-        # print(self.network)
-        # sys.exit(10)
-
-        ##### INCOMPLETE
+        print(self.network)
+        sys.exit(10)
 
     def get_output(self, inputs):
 
-
         current_array = inputs
-
-        # with Pool(2) as p:
-        #     for i in range(len(self.layers)):
-        #         current_array = p.map(Network.parallelize, self.layers, current_array)
 
         for i in range(len(self.layers)):
             current_array = self.layers[i].get_outputs(current_array)
@@ -56,6 +49,7 @@ class Network:
 
         for i in range(len(self.layers)):
             self.layers[i].set_layer_values(values[i], should_modify)
+
 
 def get_random_weight():
 

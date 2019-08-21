@@ -11,6 +11,7 @@ import json
 
 class Simulation:
 
+    # Set up the pygame environment
     pygame.init()
     screen = pygame.display.set_mode(Config.screen_size)
     pygame.display.set_caption("Neural Network - Ants")
@@ -22,6 +23,7 @@ class Simulation:
     system_font = pygame.freetype.get_default_font()
     text = pygame.freetype.SysFont(system_font, 20)
 
+    # File paths
     log_file = "DataFiles/ant_log.txt"
     best_ant_file = "DataFiles/best_ant_brain.txt"
     last_gen_file = "DataFiles/last_gen_gene_pool.txt"
@@ -45,11 +47,27 @@ class Simulation:
         #     ant = self.world_layers[0].ant
         #     ant.network.set_network_values(brain, False)
 
-        Simulation.write_to_file("", "w")
+        Simulation.write_to_log("", "w")
 
     def run(self):
 
-        Simulation.write_to_file("---BEGIN---\n\n")
+        # Bootleg injection
+        # Load previous generation on start
+
+        with open(Simulation.last_gen_file, "r") as last_gen_file:
+            self.generation_counter = int(last_gen_file.readline())
+
+            i = 0
+            ant_brain_text = last_gen_file.readline()
+
+            while ant_brain_text and i < Config.num_of_ants:
+                ant_brain = json.loads(ant_brain_text)
+                self.world_layers[i].ant.set_network_values(ant_brain)
+
+                ant_brain_text = last_gen_file.readline()
+                i += 1
+
+        Simulation.write_to_log("---BEGIN---\n\n")
         while True:
 
             start_next_cycle = False
@@ -62,7 +80,7 @@ class Simulation:
             start_next_cycle = self.process_events(start_next_cycle)
 
             if start_next_cycle:
-                Simulation.write_to_file("Gen " + str(self.generation_counter))
+                Simulation.write_to_log("Gen " + str(self.generation_counter))
                 self.evolve_ants()
                 Food.need_next_location = True
                 Food.food_positions = []
@@ -87,15 +105,26 @@ class Simulation:
         for event in pygame.event.get():
             if (event.type == pygame.QUIT or
                     (event.type == pygame.KEYDOWN and event.key == pygame.K_q)):  # End simulation
-                Simulation.write_to_file("\n----END----\n")
+
+                # Bootleg injection
+                # Save generation on quit
+
+                with open(Simulation.last_gen_file, "w") as last_gen_file:
+                    last_gen_file.write(str(self.generation_counter - 1))
+                    for layer in self.world_layers:
+                        ant_brain = layer.previous_ant.network.get_network_values()
+                        last_gen_file.write("\n" + str(ant_brain))
+
+                Simulation.write_to_log("\n----END----\n")
                 sys.exit(0)
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:  # Restart cycle
                 # TODO: Broken; need to fix this
-                for layer in self.world_layers:
-                    layer.__init__()
-                self.generation_counter = 1
-                start_next_cycle = True
-                Simulation.write_to_file()
+                print("Space is disabled")
+                # for layer in self.world_layers:
+                #     layer.__init__()
+                # self.generation_counter = 1
+                # start_next_cycle = True
+                # Simulation.write_to_file()
             if event.type == pygame.KEYDOWN and event.key == pygame.K_f:  # Print food location
                 WorldLayer.should_print_food_coordinates = not WorldLayer.should_print_food_coordinates
             if event.type == pygame.KEYDOWN and event.key == pygame.K_n:  # Start next cycle
@@ -115,11 +144,11 @@ class Simulation:
                     ant.network.set_network_values(brain, False)
             if event.type == pygame.KEYDOWN and event.key == pygame.K_s:  # Save generation
                 with open(Simulation.last_gen_file, "w") as last_gen_file:
-                    last_gen_file.write(str(self.generation_counter))
+                    last_gen_file.write(str(self.generation_counter - 1))
                     for layer in self.world_layers:
-                        ant_brain = layer.ant.network.get_network_values()
+                        ant_brain = layer.previous_ant.network.get_network_values()
                         last_gen_file.write("\n" + str(ant_brain))
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_l:  # Load best ant
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_l:  # Load generation
                 with open(Simulation.last_gen_file, "r") as last_gen_file:
                     self.generation_counter = int(last_gen_file.readline())
 
@@ -160,7 +189,7 @@ class Simulation:
         # Sort ants by their score
         sorted_ants = sorted(ants, key=(lambda this_ant: this_ant.get_score()), reverse=True)
         self.best_score = sorted_ants[0].food_eaten
-        Simulation.write_to_file("\tBest ant scored " + str(self.best_score) + "\n")
+        Simulation.write_to_log("\tBest ant scored " + str(self.best_score) + "\n")
 
         # If this generation contains the best ant ever, save it to a file
         with open(Simulation.best_ant_file, "r") as best_ant_file:
@@ -175,12 +204,15 @@ class Simulation:
                                     str(best_ant_in_gen.food_eaten) + "\n" +
                                     str(best_ant_in_gen.network.get_network_values()))
 
-        Simulation.write_to_file()
+        Simulation.write_to_log()
         self.create_next_generation(sorted_ants)
 
     def create_next_generation(self, sorted_ants):
 
         ten_percent = math.floor(Config.num_of_ants * .1)
+
+        for layer in self.world_layers:
+            layer.previous_ant = layer.ant
 
         # Copy the top 10%'s' brains perfectly
         for i in range(ten_percent):
@@ -201,7 +233,7 @@ class Simulation:
                 new_ant.set_network_values(smart_ant_brain, True)
 
     @staticmethod
-    def write_to_file(message="", mode="a"):
+    def write_to_log(message="", mode="a"):
 
         with open(Simulation.log_file, mode) as log_file:
             log_file.write(message)

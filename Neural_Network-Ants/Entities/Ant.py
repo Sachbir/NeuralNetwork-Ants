@@ -6,6 +6,7 @@ from Config import Config
 from Entities.Food import Food
 from Entities.GameObject import GameObject
 from NeuralNetwork.Network import Network
+# from Network3 import Network
 from statistics import mean
 
 
@@ -155,7 +156,7 @@ class Ant(GameObject):
             vector_intended = Ant.normalize(vector_intended)
             vector_overall = Ant.normalize(vector_overall)
             vector_current = vector_overall
-            # TODO: Idea - use origin point and 2/3 points near the end to calculate vector, not just beginning and end
+            # TODO: Idea - use origin point and 2-3 points near the end to calculate vector, not just beginning and end
             #   advantage: helps eliminate randomness from spiral looseness
             # vector_current = self.get_line_of_best_fit()
             #
