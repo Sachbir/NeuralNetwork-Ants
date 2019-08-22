@@ -38,7 +38,7 @@ class Simulation:
                              for i in range(Config.num_of_ants)]
         self.ants_alive = len(self.world_layers)
 
-        self.best_score = 0
+        self.best_fitness_score = 0
         self.generation_counter = 0
 
         # with open(Simulation.best_ant_file, "r") as best_ant_file:
@@ -77,7 +77,7 @@ class Simulation:
                 Simulation.text.render_to(pygame.display.get_surface(),
                                           (11, 12),     # Offset looks better visually, even if mathematically imperfect
                                           "Gen " + str(self.generation_counter + 1) +
-                                          " | Best Score of Last Round: " + str(self.best_score))
+                                          " | Best Fitness Score of Last Round: " + str(self.best_fitness_score))
             # Updates in here!
             for layer in self.world_layers:
                 self.ants_alive -= not layer.update(start_next_cycle)   # Layer returns if any is alive
@@ -116,7 +116,7 @@ class Simulation:
                 if event.key == pygame.K_b:  # Load best ant
                     with open(Simulation.best_ant_file, "r") as best_ant_file:
                         self.generation_counter = int(best_ant_file.readline())
-                        best_ant_score = best_ant_file.readline()
+                        best_fitness_score = best_ant_file.readline()
                         brain_text = best_ant_file.readline()
                         brain = json.loads(brain_text)
                         ant = self.world_layers[0].ant
@@ -165,10 +165,10 @@ class Simulation:
         for i in range(len(self.world_layers)):
             ants.insert(i, self.world_layers[i].ant)
 
-        # Sort ants by their score
-        sorted_ants = sorted(ants, key=(lambda this_ant: this_ant.get_score()), reverse=True)
-        self.best_score = sorted_ants[0].food_eaten
-        Simulation.write_to_log("\tBest ant scored " + str(self.best_score) + "\n")
+        # Sort ants by their fitness
+        sorted_ants = sorted(ants, key=(lambda this_ant: this_ant.get_fitness()), reverse=True)
+        self.best_fitness_score = sorted_ants[0].food_eaten
+        Simulation.write_to_log("\tBest ant scored " + str(self.best_fitness_score) + "\n")
 
         # If this generation contains the best ant ever, save it to a file
         with open(Simulation.best_ant_file, "r") as best_ant_file:

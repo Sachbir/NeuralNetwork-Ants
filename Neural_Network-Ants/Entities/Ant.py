@@ -128,7 +128,7 @@ class Ant(GameObject):
         self.network.set_network_values(values, should_modify)
         self.spawn(self.color)
 
-    def get_score(self):
+    def get_fitness(self):
 
         # calculate score based on food eaten and current vector
         # ants that have eaten food do well
