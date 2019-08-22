@@ -115,9 +115,9 @@ class Simulation:
                     ant.network.set_network_values(brain, False)
             if event.type == pygame.KEYDOWN and event.key == pygame.K_s:  # Save generation
                 with open(Simulation.last_gen_file, "w") as last_gen_file:
-                    last_gen_file.write(str(self.generation_counter))
+                    last_gen_file.write(str(self.generation_counter - 1))
                     for layer in self.world_layers:
-                        ant_brain = layer.ant.network.get_network_values()
+                        ant_brain = layer.previous_ant.network.get_network_values()
                         last_gen_file.write("\n" + str(ant_brain))
             if event.type == pygame.KEYDOWN and event.key == pygame.K_l:  # Load best ant
                 with open(Simulation.last_gen_file, "r") as last_gen_file:
